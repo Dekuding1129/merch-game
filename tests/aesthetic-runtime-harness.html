@@ -1,0 +1,33 @@
+<!doctype html><meta charset="utf-8"><title>Aesthetic runtime harness</title>
+<iframe id="app" src="/?motion=full" style="width:1200px;height:900px;border:0"></iframe>
+<pre id="result">pending</pre>
+<script>
+const frame = document.querySelector('#app');
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+frame.addEventListener('load', async () => {
+  const doc = frame.contentDocument;
+  await wait(2800);
+  const initial = {
+    pagination: doc.querySelector('#productPagination')?.textContent,
+    tickerItems: doc.querySelectorAll('#tickerTrack span').length,
+    shadowShift: doc.querySelector('#viewer')?.style.getPropertyValue('--ground-shift'),
+    availableDisabled: doc.querySelector('#size')?.disabled
+  };
+  doc.querySelector('[data-index="1"]')?.click();
+  await wait(1100);
+  const comingSoon = {
+    pagination: doc.querySelector('#productPagination')?.textContent,
+    sizeDisabled: doc.querySelector('#size')?.disabled,
+    action: doc.querySelector('#equip')?.textContent,
+    unavailable: doc.querySelector('#purchasePanel')?.classList.contains('is-unavailable')
+  };
+  doc.querySelector('#productDetailButton')?.click();
+  await wait(100);
+  const detail = {
+    open: doc.querySelector('#productDetailDialog')?.open,
+    title: doc.querySelector('#productDetailTitle')?.textContent,
+    activeView: doc.querySelector('#detailView')?.dataset.activeDetail
+  };
+  document.querySelector('#result').textContent = JSON.stringify({ initial, comingSoon, detail });
+});
+</script>

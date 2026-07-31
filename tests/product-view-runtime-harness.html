@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Product view control runtime harness</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #20242a; font-family: monospace; }
+  iframe { display: block; width: 1400px; height: 900px; border: 0; }
+  output { display: block; width: 1400px; min-height: 60px; padding: 12px; color: #d7ff45; background: #090b0f; white-space: pre-wrap; }
+</style>
+<iframe id="site" src="../?motion=full&view-test=1"></iframe>
+<output id="result">Waiting…</output>
+<script>
+  const frame = document.querySelector('#site');
+  const result = document.querySelector('#result');
+  const targetView = new URLSearchParams(location.search).get('view') || 'side';
+  frame.addEventListener('load', () => {
+    setTimeout(() => {
+      const doc = frame.contentDocument;
+      const viewer = doc.querySelector('#viewer');
+      const button = doc.querySelector(`[data-view="${targetView}"]`);
+      let viewerPointerDowns = 0;
+      viewer.addEventListener('pointerdown', () => { viewerPointerDowns += 1; });
+      button?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, pointerId: 91, clientX: 930, clientY: 500 }));
+      button?.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 91, clientX: 930, clientY: 500 }));
+      button?.click();
+      setTimeout(() => {
+        result.textContent = JSON.stringify({
+          view: doc.querySelector('#viewer')?.dataset.view,
+          pressed: [...doc.querySelectorAll('[data-view]')].filter(button => button.getAttribute('aria-pressed') === 'true').map(button => button.dataset.view),
+          viewerPointerDowns,
+          dialogOpen: doc.querySelector('#productDetailDialog')?.open,
+          productLabel: doc.querySelector('#product')?.getAttribute('aria-label')
+        });
+      }, 800);
+    }, 1500);
+  });
+</script>

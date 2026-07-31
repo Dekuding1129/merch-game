@@ -1,0 +1,26 @@
+<!doctype html><meta charset="utf-8"><title>Mobile dock runtime</title>
+<iframe id="app" src="/?motion=full" style="width:390px;height:667px;border:0"></iframe>
+<pre id="result">pending</pre>
+<script>
+const frame = document.querySelector('#app');
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+frame.addEventListener('load', async () => {
+  const win = frame.contentWindow;
+  const doc = frame.contentDocument;
+  await wait(2400);
+  doc.querySelector('#productName').scrollIntoView({ block: 'start' });
+  win.dispatchEvent(new Event('scroll'));
+  await wait(350);
+  const dock = doc.querySelector('#mobilePurchaseDock');
+  document.querySelector('#result').textContent = JSON.stringify({
+    visible: dock.classList.contains('is-visible'),
+    hidden: dock.getAttribute('aria-hidden'),
+    action: doc.querySelector('#mobileDockAction').textContent,
+    name: doc.querySelector('#mobileDockName').textContent,
+    scrollY: win.scrollY,
+    viewerHeight: doc.querySelector('#viewer').offsetHeight,
+    equipTop: doc.querySelector('#equip').getBoundingClientRect().top,
+    viewport: win.innerHeight
+  });
+});
+</script>

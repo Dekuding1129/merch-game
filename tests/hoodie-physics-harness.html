@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Hoodie drawstring physics harness</title>
+<iframe id="app" src="/?motion=full" style="width:1200px;height:850px;border:0"></iframe>
+<pre id="result">pending</pre>
+<script>
+  const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+  document.querySelector('#app').addEventListener('load', async event => {
+    const app = event.target.contentWindow;
+    await wait(1400);
+    app.document.querySelector('[data-index="2"]').click();
+    await wait(1200);
+    const renderer = app.MizrachHoodie3D;
+    renderer.applyPhysicsImpulse(new app.THREE.Vector3(2.4, -1.8, 0.9));
+    await wait(120);
+    document.querySelector('#result').textContent = JSON.stringify({
+      loaded: renderer.loaded,
+      physics: renderer.getPhysicsState(),
+      debug: renderer.getDebugState().drawstringPhysics
+    });
+  });
+</script>

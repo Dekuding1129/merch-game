@@ -1,0 +1,18 @@
+Virtual Pandora — “Hoodie”
+Source: https://sketchfab.com/3d-models/hoodie-97611a53e3b846f69e0655b210f72b2f
+Author: Virtual Pandora (@virtualpandora)
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License URL: https://creativecommons.org/licenses/by/4.0/
+Commercial use: permitted with attribution.
+
+Model description from source:
+“3D model of sweatshirt with hoodie, front kangaroo pocket and elastic ribs. Model is created in CLO3D. Original CLO3D model and patterns in DXF (Male Size M) are available upon request.”
+
+Dataset mirror: Objaverse / Hugging Face
+Mirror path: glbs/000-091/97611a53e3b846f69e0655b210f72b2f.glb
+SHA-256: 1a51e55972c8f5d1cdc4e629cd6daa48722f330c8251373018aba1b1a9f4bb7d
+
+Local modifications for Mizrach Pinaz storefront:
+- garment material recolored and tuned to black fleece;
+- front-only Mizrach Pinaz artwork applied;
+- camera normalization and local file embedding added.

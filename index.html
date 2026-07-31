@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07080c">
+  <title>LOOT — Merch Selection</title>
+  <link rel="stylesheet" href="css/style.css?v=20260731-1057">
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">LOOT<span>/</span></div>
+      <div class="status">
+        <div class="status__live"><i class="status__dot"></i> Drop 001 live</div>
+        <span>Free shipping over $100</span>
+        <button class="cart-button" id="cartButton" aria-expanded="false" aria-controls="cartPanel">Inventory <b class="cart-count" id="cartCount">0</b></button>
+      </div>
+    </header>
+
+    <main>
+      <aside class="rail">
+        <div>
+          <div class="eyebrow">Choose your gear</div>
+          <h1>Merch</h1>
+        </div>
+        <nav class="select-list" id="productList" aria-label="Merch selection"></nav>
+        <div class="carousel-meta" aria-live="polite">
+          <span class="carousel-swipe">Swipe products</span>
+          <span class="carousel-pagination" id="productPagination">01 / 05</span>
+        </div>
+        <div class="controls-hint">
+          <div><span class="key">W</span> <span class="key">S</span> Select item</div>
+          <div><span class="key">←</span> <span class="key">↑</span> <span class="key">↓</span> <span class="key">→</span> Free spin</div>
+          <div><span class="key">E</span> Add to inventory</div>
+          <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false"><span class="key">♪</span> Selection sound: off</button>
+        </div>
+      </aside>
+
+      <section class="viewer" id="viewer" aria-label="Interactive product viewer">
+        <div class="stage-number" id="stageNumber">01</div>
+        <div class="product-ground-shadow" aria-hidden="true"></div>
+        <div class="product" id="product" role="img" aria-label="Product placeholder. Drag to rotate.">
+          <canvas class="product-3d-canvas" id="tshirt3dCanvas" aria-hidden="true" hidden></canvas>
+          <canvas class="product-3d-canvas" id="cup3dCanvas" aria-hidden="true" hidden></canvas>
+          <canvas class="product-3d-canvas" id="hoodie3dCanvas" aria-hidden="true" hidden></canvas>
+          <canvas class="product-3d-canvas" id="keychain3dCanvas" aria-hidden="true" hidden></canvas>
+          <img class="product-frame" id="productFrame" src="" alt="" draggable="false" hidden>
+          <svg class="product-art" id="productArt" viewBox="0 0 500 580" aria-hidden="true"></svg>
+        </div>
+        <div class="detail-hotspots" aria-label="Product view controls">
+          <button type="button" data-view="top" aria-label="Show product top view" aria-pressed="false"><span>01</span> Top</button>
+          <button type="button" data-view="side" aria-label="Show product side view" aria-pressed="false"><span>02</span> Side</button>
+          <button type="button" data-view="bottom" aria-label="Show product bottom view" aria-pressed="false"><span>03</span> Bottom</button>
+        </div>
+        <div class="drag-hint"><span>Drag</span><i class="drag-line"></i><span>Free rotate</span></div>
+      </section>
+
+      <aside class="info">
+        <div class="product-meta">
+          <div class="eyebrow" id="rarity">Rare / 01</div>
+          <h2 id="productName">Signal Tee</h2>
+          <p id="description">Heavyweight cotton with a boxy fit. Built for late nights, loud rooms, and respawning tomorrow.</p>
+          <div class="price"><strong id="price">$42</strong><span class="stock" id="stock">In stock</span></div>
+          <dl class="specs" id="specs"></dl>
+          <button class="product-detail-button" id="productDetailButton" type="button">Inspect product details</button>
+          <button class="product-sheet-button" id="productSheetButton" type="button" hidden>View full 360° product sheet</button>
+        </div>
+        <div class="purchase" id="purchasePanel">
+          <div class="field">
+            <label for="size">Select size</label>
+            <select class="size-select" id="size">
+              <option value="">Choose size...</option>
+              <option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>2XL</option>
+            </select>
+          </div>
+          <button class="equip" id="equip">Equip item — E</button>
+        </div>
+      </aside>
+    </main>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+  </div>
+
+  <aside class="mobile-purchase-dock" id="mobilePurchaseDock" aria-hidden="true">
+    <div><span id="mobileDockName">Mizrach Pinaz T-Shirt</span><strong id="mobileDockPrice">$42</strong></div>
+    <button id="mobileDockAction" type="button">Equip</button>
+  </aside>
+
+  <aside class="cart-panel" id="cartPanel" aria-hidden="true">
+    <div class="cart-head"><h3>Inventory</h3><button class="close-cart" id="closeCart" aria-label="Close inventory">×</button></div>
+    <div class="cart-items" id="cartItems"><p class="cart-empty">Inventory empty.<br>Pick your gear and enter the next level.</p></div>
+  </aside>
+
+  <dialog class="product-sheet-dialog" id="productSheetDialog" aria-labelledby="productSheetTitle">
+    <div class="product-sheet-dialog__bar">
+      <div><span class="eyebrow">Product archive</span><h3 id="productSheetTitle">Mizrach Pinaz T-Shirt 360°</h3></div>
+      <button class="close-sheet" id="closeProductSheet" type="button" aria-label="Close product sheet">×</button>
+    </div>
+    <img id="productSheetImage" src="" alt="Mizrach Pinaz T-shirt rotation views and product details">
+  </dialog>
+
+  <dialog class="product-detail-dialog" id="productDetailDialog" aria-labelledby="productDetailTitle">
+    <div class="detail-dialog__bar">
+      <div><span class="eyebrow">Material inspection</span><h3 id="productDetailTitle">Product details</h3></div>
+      <button class="close-detail" id="closeProductDetail" type="button" aria-label="Close product details">×</button>
+    </div>
+    <div class="detail-dialog__body">
+      <div class="detail-view" id="detailView" data-active-detail="fabric">
+        <div class="detail-view__fabric" aria-hidden="true"></div>
+        <img class="detail-view__print" id="detailPrintImage" src="images/tshirt/logo-sharp.png" alt="Mizrach artwork print detail">
+        <div class="detail-view__construction" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span class="detail-view__label" id="detailViewLabel">Fabric / 01</span>
+      </div>
+      <div class="detail-copy">
+        <nav class="detail-tabs" aria-label="Product detail views">
+          <button type="button" data-detail="fabric" class="active">01 Fabric</button>
+          <button type="button" data-detail="print">02 Print</button>
+          <button type="button" data-detail="construction">03 Construction</button>
+        </nav>
+        <div><span class="eyebrow" id="detailSpecLabel">Fabric</span><h4 id="detailHeading">Premium cotton</h4><p id="detailDescription">A dense, soft-touch surface designed to hold its shape.</p></div>
+        <dl class="detail-specs" id="detailSpecs"></dl>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><strong>Item acquired</strong><span id="toastMessage"></span></div>
+
+  <script src="js/logo-data.js?v=20260728-1153" defer></script>
+  <script src="js/shirt-model-data.js" defer></script>
+  <script src="js/vendor/three.min.js" defer></script>
+  <script src="js/vendor/GLTFLoader.js" defer></script>
+  <script src="js/vendor/DecalGeometry.js" defer></script>
+  <script src="js/tshirt-3d.js?v=20260728-1438" defer></script>
+  <script src="js/cup-3d.js?v=20260728-1438" defer></script>
+  <script src="js/hoodie-model-data.js?v=20260729-1740" defer></script>
+  <script src="js/hoodie-3d.js?v=20260730-2202" defer></script>
+  <script src="js/keychain-3d.js?v=20260730-2118" defer></script>
+  <script src="js/viewer.js?v=20260731-1101" defer></script>
+</body>
+</html>

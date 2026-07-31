@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8"><title>Mobile audit</title>
+<iframe id="app" src="/?motion=full" style="width:390px;height:1700px;border:0"></iframe>
+<pre id="result">pending</pre>
+<script>
+const frame=document.querySelector('#app');
+frame.addEventListener('load',()=>setTimeout(()=>{
+ const w=frame.contentWindow,d=w.document.documentElement,b=w.document.body;
+ document.querySelector('#result').textContent=JSON.stringify({innerWidth:w.innerWidth,clientWidth:d.clientWidth,scrollWidth:d.scrollWidth,bodyScrollWidth:b.scrollWidth});
+},2500));
+</script>
