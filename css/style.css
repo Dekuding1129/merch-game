@@ -199,6 +199,7 @@
     }
     .product-loader[hidden] { display: block; opacity: 0; transform: translate(-50%, -46%); }
     .product-loader__spinner {
+      display: block;
       width: 50px;
       aspect-ratio: 1;
       border-radius: 50%;
