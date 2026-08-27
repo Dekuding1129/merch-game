@@ -39,7 +39,7 @@
     ];
 
     const els = {
-      list: document.querySelector('#productList'), product: document.querySelector('#product'), art: document.querySelector('#productArt'),
+      list: document.querySelector('#productList'), product: document.querySelector('#product'), productLoader: document.querySelector('#productLoader'), art: document.querySelector('#productArt'),
       frame: document.querySelector('#productFrame'), shirtCanvas: document.querySelector('#tshirt3dCanvas'), cupCanvas: document.querySelector('#cup3dCanvas'), hoodieCanvas: document.querySelector('#hoodie3dCanvas'), keychainCanvas: document.querySelector('#keychain3dCanvas'),
       viewer: document.querySelector('#viewer'), stage: document.querySelector('#stageNumber'), rarity: document.querySelector('#rarity'),
       name: document.querySelector('#productName'), description: document.querySelector('#description'), price: document.querySelector('#price'),
@@ -97,6 +97,18 @@
     let inertiaLastTime = 0;
     let inertiaFrame = 0;
     let viewSnapFrame = 0;
+    const readyEvents = {
+      shirt: 'mizrach-3d-ready',
+      cup: 'mizrach-cup-3d-ready',
+      hoodie: 'mizrach-hoodie-3d-ready',
+      keychain: 'mizrach-keychain-3d-ready'
+    };
+
+    function setProductLoading(loading) {
+      els.viewer.classList.toggle('is-loading', loading);
+      els.productLoader.hidden = !loading;
+      els.viewer.setAttribute('aria-busy', String(loading));
+    }
     const PRODUCT_VIEW_ANGLES = {
       top: { x: 42, y: 0 },
       side: { x: 0, y: 90 },
@@ -277,6 +289,7 @@
     }
 
     function showFallback(product = products[active]) {
+      setProductLoading(true);
       activeFrames = [];
       active3DRenderer = rendererFor(product);
       const activeCanvas = canvasFor(product);
@@ -294,13 +307,20 @@
         els.art.hidden = true;
         els.product.classList.add('has-3d');
         active3DRenderer.render();
+        if (active3DRenderer.loaded) setProductLoading(false);
         return;
       }
       active3DRenderer = null;
       usingStaticPreview = Boolean(product && product.fallbackImage);
       if (usingStaticPreview) {
-        els.frame.src = product.fallbackImage;
         els.frame.alt = `${product.name}, front view`;
+        els.frame.onload = () => {
+          if (products[active] === product) setProductLoading(false);
+        };
+        els.frame.onerror = () => {
+          if (products[active] === product) setProductLoading(false);
+        };
+        els.frame.src = product.fallbackImage;
         els.frame.hidden = false;
         els.art.hidden = true;
         els.product.classList.add('has-frames');
@@ -308,6 +328,7 @@
         els.frame.hidden = true;
         els.frame.removeAttribute('src');
         els.art.hidden = false;
+        setProductLoading(false);
       }
     }
 
@@ -614,6 +635,18 @@
     els.closeDetail.addEventListener('click', () => els.detailDialog.close());
     els.detailDialog.addEventListener('click', event => { if (event.target === els.detailDialog) els.detailDialog.close(); });
     els.mobileDockAction.addEventListener('click', addToCart);
+
+    Object.entries(readyEvents).forEach(([model, eventName]) => {
+      window.addEventListener(eventName, () => {
+        if (products[active].model3d !== model || !using3D) return;
+        active3DRenderer?.render();
+        setProductLoading(false);
+      });
+    });
+    window.addEventListener('mizrach-3d-failed', () => {
+      const p = products[active];
+      if (p.model3d === 'shirt' || p.model3d === 'hoodie') showFallback(p);
+    });
 
     function updateMobileDockVisibility() {
       const mobile = window.matchMedia('(max-width: 700px)').matches;
