@@ -170,8 +170,8 @@
 
     .product {
       position: relative;
-      width: min(64%, 490px);
-      aspect-ratio: .86;
+      width: min(76%, 560px);
+      aspect-ratio: .92;
       display: grid;
       place-items: center;
       transform-style: preserve-3d;
@@ -393,7 +393,7 @@
       pointer-events: none;
       user-select: none;
     }
-    .product.has-3d { width: min(76%, 560px); aspect-ratio: .92; filter: drop-shadow(0 34px 22px rgb(31 37 45 / .24)); }
+    .product.has-3d { filter: drop-shadow(0 34px 22px rgb(31 37 45 / .24)); }
     .product.has-3d .product-3d-canvas.is-active { display: block; }
     .product.has-3d .product-frame,
     .product.has-3d .product-art { display: none; }
