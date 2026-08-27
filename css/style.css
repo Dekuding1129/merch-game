@@ -210,7 +210,7 @@
       mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
       animation: productLoaderSpin 1s infinite linear;
     }
-    .viewer.is-loading .product { opacity: .18; filter: blur(3px); }
+    .viewer.is-loading .product-loader { opacity: 1; }
     @keyframes productLoaderSpin {
       100% { transform: rotate(1turn); }
     }
