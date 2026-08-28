@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery')
     };
 
     let active = 0;
@@ -59,6 +59,7 @@
     let rotationStart = 0;
     let pitchStart = 0;
     const cart = [];
+    let deliveryDetails = null;
     let activeFrames = [];
     let sequenceToken = 0;
     let usingStaticPreview = false;
@@ -526,15 +527,38 @@
         els.toastMessage.textContent = 'Choose an option before equipping.';
         els.toast.querySelector('strong').textContent = 'Option required';
       } else {
-        cart.push({ ...p, option: els.size.value });
-        els.cartCount.textContent = cart.length;
-        els.toast.querySelector('strong').textContent = 'Item acquired';
-        els.toastMessage.textContent = `${p.name} / ${els.size.value} added to inventory.`;
-        renderCart();
+        openDeliveryForm();
+        return;
       }
       els.toast.classList.add('show');
       clearTimeout(addToCart.toastTimer);
       addToCart.toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2600);
+    }
+
+    function openDeliveryForm() {
+      els.deliveryModal.hidden = false;
+      els.deliveryModal.classList.add('open');
+      els.deliveryForm.elements.name.focus();
+    }
+
+    function closeDeliveryForm() {
+      els.deliveryModal.classList.remove('open');
+      els.deliveryModal.hidden = true;
+    }
+
+    function saveDeliveryDetails(event) {
+      event.preventDefault();
+      deliveryDetails = Object.fromEntries(new FormData(els.deliveryForm).entries());
+      const p = products[active];
+      cart.push({ ...p, option: els.size.value });
+      els.cartCount.textContent = cart.length;
+      renderCart();
+      closeDeliveryForm();
+      els.toast.querySelector('strong').textContent = 'Details captured';
+      els.toastMessage.textContent = `${p.name} added for delivery. Checkout connection still needs to be added.`;
+      els.toast.classList.add('show');
+      clearTimeout(addToCart.toastTimer);
+      addToCart.toastTimer = setTimeout(() => els.toast.classList.remove('show'), 3200);
     }
 
     function renderCart() {
@@ -566,6 +590,11 @@
     });
 
     els.mobileDockAction.addEventListener('click', addToCart);
+    els.deliveryForm.addEventListener('submit', saveDeliveryDetails);
+    els.closeDelivery.addEventListener('click', closeDeliveryForm);
+    els.cancelDelivery.addEventListener('click', closeDeliveryForm);
+    els.deliveryModal.addEventListener('click', event => { if (event.target === els.deliveryModal) closeDeliveryForm(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !els.deliveryModal.hidden) closeDeliveryForm(); });
 
     Object.entries(readyEvents).forEach(([model, eventName]) => {
       window.addEventListener(eventName, () => {

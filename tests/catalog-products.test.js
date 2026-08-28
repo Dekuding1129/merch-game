@@ -28,3 +28,14 @@ test('available purchase controls are labeled BUY', () => {
   assert.match(viewer, /els\.mobileDockAction\.textContent = available \? 'BUY' : 'Notify me'/);
   assert.match(viewer, /els\.equip\.textContent = available \? 'BUY' : 'Notify me'/);
 });
+
+test('BUY opens a required delivery-details form without local persistence', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /id="deliveryForm"/);
+  for (const field of ['name', 'email', 'phone', 'address', 'city', 'postal', 'country']) {
+    assert.match(index, new RegExp(`name="${field}"[^>]*required`));
+  }
+  assert.match(viewer, /openDeliveryForm\(\)/);
+  assert.match(viewer, /Object\.fromEntries\(new FormData\(els\.deliveryForm\)\.entries\(\)\)/);
+  assert.doesNotMatch(viewer, /localStorage\.setItem\([^)]*delivery/);
+});

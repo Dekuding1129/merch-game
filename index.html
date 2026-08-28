@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#07080c">
   <title>LOOT — Merch Selection</title>
-  <link rel="stylesheet" href="css/style.css?v=20260828-1600">
+  <link rel="stylesheet" href="css/style.css?v=20260828-1640">
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -97,6 +97,25 @@
     <div class="cart-items" id="cartItems"><p class="cart-empty">Inventory empty.<br>Pick your gear and enter the next level.</p></div>
   </aside>
 
+  <div class="delivery-modal" id="deliveryModal" hidden>
+    <section class="delivery-card" role="dialog" aria-modal="true" aria-labelledby="deliveryTitle">
+      <div class="delivery-head"><div><div class="eyebrow">Delivery details</div><h3 id="deliveryTitle">Where should we send it?</h3></div><button class="close-cart" id="closeDelivery" type="button" aria-label="Close delivery form">×</button></div>
+      <p class="delivery-note">Placeholder checkout: your details stay in this browser session and are not sent or saved yet.</p>
+      <form id="deliveryForm">
+        <div class="delivery-grid">
+          <div class="field"><label for="deliveryName">Full name</label><input id="deliveryName" name="name" autocomplete="name" required></div>
+          <div class="field"><label for="deliveryEmail">Email</label><input id="deliveryEmail" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="deliveryPhone">Phone</label><input id="deliveryPhone" name="phone" type="tel" autocomplete="tel" required></div>
+          <div class="field delivery-wide"><label for="deliveryAddress">Street address</label><input id="deliveryAddress" name="address" autocomplete="street-address" required></div>
+          <div class="field"><label for="deliveryCity">City</label><input id="deliveryCity" name="city" autocomplete="address-level2" required></div>
+          <div class="field"><label for="deliveryPostal">Postal code</label><input id="deliveryPostal" name="postal" autocomplete="postal-code" required></div>
+          <div class="field delivery-wide"><label for="deliveryCountry">Country</label><input id="deliveryCountry" name="country" autocomplete="country-name" required></div>
+        </div>
+        <div class="delivery-actions"><button class="delivery-cancel" id="cancelDelivery" type="button">Cancel</button><button class="equip" type="submit">Continue — BUY</button></div>
+      </form>
+    </section>
+  </div>
+
 
   <div class="toast" id="toast" role="status" aria-live="polite"><strong>Item acquired</strong><span id="toastMessage"></span></div>
 
@@ -110,6 +129,6 @@
   <script src="js/hoodie-model-data.js?v=20260729-1740" defer></script>
   <script src="js/hoodie-3d.js?v=20260730-2202" defer></script>
   <script src="js/keychain-3d.js?v=20260730-2118" defer></script>
-  <script src="js/viewer.js?v=20260828-1610" defer></script>
+  <script src="js/viewer.js?v=20260828-1640" defer></script>
 </body>
 </html>
