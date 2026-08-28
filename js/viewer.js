@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
     };
 
     let active = 0;
@@ -547,7 +547,7 @@
     function openDeliveryForm() {
       els.deliveryModal.hidden = false;
       els.deliveryModal.classList.add('open');
-      if (els.deliveryCountry.options.length <= 1) loadCountries();
+      if (!els.deliveryCountryOptions.children.length) loadCountries();
       els.deliveryForm.elements.name.focus();
     }
 
@@ -565,24 +565,30 @@
       list.innerHTML = values.map(value => `<option value="${value}"></option>`).join('');
     }
 
+    function countryCode(data) {
+      const typed = els.deliveryCountry.value.trim().toLocaleLowerCase();
+      return data.countries?.find(country => country.name.toLocaleLowerCase() === typed)?.code || els.deliveryCountry.value.trim().toUpperCase();
+    }
+
     async function loadCountries() {
       try {
         const data = await getLocationData();
-        setOptions(els.deliveryCountry, '', data.countries);
+        els.deliveryCountryOptions.innerHTML = data.countries.map(country => `<option value="${country.name}"></option>`).join('');
       } catch {
-        setOptions(els.deliveryCountry, '', [], true);
+        els.deliveryCountryOptions.innerHTML = '';
+        els.deliveryCountry.disabled = false;
       }
     }
 
     async function updateDeliveryRegions() {
       setOptions(els.deliveryRegion, '', [], true);
-      setOptions(els.deliveryCity, '', [], true);
+      els.deliveryCityOptions.innerHTML = '';
       els.deliveryPostal.value = '';
       els.deliveryPostal.placeholder = '';
 
       setSuggestions(els.deliveryPostalOptions, []);
       const data = await getLocationData();
-      const regions = data.regions?.[els.deliveryCountry.value] || [];
+      const regions = data.regions?.[countryCode(data)] || [];
       setOptions(els.deliveryRegion, '', regions, !regions.length);
     }
 
@@ -594,7 +600,7 @@
       els.deliveryCity.value = '';
 
       const data = await getLocationData();
-      const cities = data.cities?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}`] || [];
+      const cities = data.cities?.[`${countryCode(data)}.${els.deliveryRegion.value}`] || [];
       els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
       els.deliveryCity.placeholder = cities.length ? '' : '';
       els.deliveryCity.disabled = false;
@@ -607,7 +613,7 @@
 
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
-      const postalCodes = data.postal?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
+      const postalCodes = data.postal?.[`${countryCode(data)}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
       setSuggestions(els.deliveryPostalOptions, postalCodes);
       els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = false;

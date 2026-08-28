@@ -103,7 +103,7 @@
       <p class="delivery-note">Placeholder checkout: your details stay in this browser session and are not sent or saved yet.</p>
       <form id="deliveryForm">
         <div class="delivery-grid">
-          <div class="field delivery-wide"><label for="deliveryCountry">Country</label><select id="deliveryCountry" name="country" autocomplete="country-name" required><option value="" selected></option></select></div>
+          <div class="field delivery-wide"><label for="deliveryCountry">Country</label><input id="deliveryCountry" name="country" list="deliveryCountryOptions" autocomplete="country-name" required><datalist id="deliveryCountryOptions"></datalist></div>
           <div class="field"><label for="deliveryRegion">Region / province</label><select id="deliveryRegion" name="region" autocomplete="address-level1" required disabled><option value="" selected></option></select></div>
           <div class="field"><label for="deliveryCity">City / municipality</label><input id="deliveryCity" name="city" list="deliveryCityOptions" autocomplete="address-level2" placeholder="" required><datalist id="deliveryCityOptions"></datalist></div>
           <div class="field"><label for="deliveryPostal">Postal code</label><input id="deliveryPostal" name="postal" list="deliveryPostalOptions" autocomplete="postal-code" placeholder="" required><datalist id="deliveryPostalOptions"></datalist></div>

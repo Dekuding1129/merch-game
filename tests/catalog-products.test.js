@@ -83,10 +83,10 @@ test('city and postal fields remain writable with dropdown suggestions', () => {
 
 test('location controls do not show instructional placeholder text', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-  assert.match(index, /id="deliveryCountry"[^>]*><option value="" selected><\/option>/);
+  assert.match(index, /id="deliveryCountry"[^>]*list="deliveryCountryOptions"/);
   assert.match(index, /id="deliveryCity"[^>]*placeholder=""/);
   assert.match(index, /id="deliveryPostal"[^>]*placeholder=""/);
-  assert.match(viewer, /setOptions\(els\.deliveryCountry, '', data\.countries\)/);
+  assert.match(viewer, /deliveryCountryOptions\.innerHTML = data\.countries/);
 });
 
 test('city and postal inputs stay writable before dependent suggestions load', () => {
@@ -94,4 +94,12 @@ test('city and postal inputs stay writable before dependent suggestions load', (
   assert.doesNotMatch(index, /id="deliveryCity"[^>]*disabled/);
   assert.doesNotMatch(index, /id="deliveryPostal"[^>]*disabled/);
   assert.match(viewer, /els\.deliveryCity\.disabled = false/);
+});
+
+test('country is a writable input with country suggestions', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /id="deliveryCountry"[^>]*list="deliveryCountryOptions"/);
+  assert.match(index, /id="deliveryCountryOptions"/);
+  assert.match(viewer, /deliveryCountryOptions\.innerHTML = data\.countries/);
+  assert.match(viewer, /function countryCode\(data\)/);
 });
