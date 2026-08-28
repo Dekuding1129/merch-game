@@ -547,7 +547,7 @@
     function openDeliveryForm() {
       els.deliveryModal.hidden = false;
       els.deliveryModal.classList.add('open');
-      if (!els.deliveryCountryOptions.children.length) loadCountries();
+      updateDeliveryRegions();
       els.deliveryForm.elements.name.focus();
     }
 
@@ -565,19 +565,8 @@
       list.innerHTML = values.map(value => `<option value="${value}"></option>`).join('');
     }
 
-    function countryCode(data) {
-      const typed = els.deliveryCountry.value.trim().toLocaleLowerCase();
-      return data.countries?.find(country => country.name.toLocaleLowerCase() === typed)?.code || els.deliveryCountry.value.trim().toUpperCase();
-    }
-
-    async function loadCountries() {
-      try {
-        const data = await getLocationData();
-        els.deliveryCountryOptions.innerHTML = data.countries.map(country => `<option value="${country.name}"></option>`).join('');
-      } catch {
-        els.deliveryCountryOptions.innerHTML = '';
-        els.deliveryCountry.disabled = false;
-      }
+    function countryCode() {
+      return 'PH';
     }
 
     async function updateDeliveryRegions() {
@@ -588,7 +577,7 @@
 
       setSuggestions(els.deliveryPostalOptions, []);
       const data = await getLocationData();
-      const regions = data.regions?.[countryCode(data)] || [];
+      const regions = data.regions?.[countryCode()] || [];
       setOptions(els.deliveryRegion, '', regions, !regions.length);
     }
 
@@ -600,7 +589,7 @@
       els.deliveryCity.value = '';
 
       const data = await getLocationData();
-      const cities = data.cities?.[`${countryCode(data)}.${els.deliveryRegion.value}`] || [];
+      const cities = data.cities?.[`${countryCode()}.${els.deliveryRegion.value}`] || [];
       els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
       els.deliveryCity.placeholder = cities.length ? '' : '';
       els.deliveryCity.disabled = false;
@@ -613,7 +602,7 @@
 
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
-      const postalCodes = data.postal?.[`${countryCode(data)}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
+      const postalCodes = data.postal?.[`${countryCode()}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
       setSuggestions(els.deliveryPostalOptions, postalCodes);
       els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = false;
@@ -693,7 +682,7 @@
     els.cancelDelivery.addEventListener('click', closeDeliveryForm);
     els.deliveryModal.addEventListener('click', event => { if (event.target === els.deliveryModal) closeDeliveryForm(); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && !els.deliveryModal.hidden) closeDeliveryForm(); });
-    els.deliveryCountry.addEventListener('change', updateDeliveryRegions);
+
     els.deliveryRegion.addEventListener('change', updateDeliveryCities);
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
 
