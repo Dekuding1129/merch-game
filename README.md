@@ -50,6 +50,10 @@ node --test tests/*.test.js
 
 This project demonstrates frontend interaction design beyond a static landing page: state management, progressive product rendering, 3D presentation, responsive UX, accessibility-minded controls, animation fallbacks, and lightweight automated verification.
 
+## Store setup
+
+Business details are intentionally kept in an editable placeholder at `STORE_DETAILS.md`. Replace every `TODO` before enabling real checkout or publishing final store policies.
+
 ## Third-party notices
 
 See `THIRD_PARTY_LICENSES.txt` and the attribution file under `models/hoodie/` for included third-party assets and libraries.
