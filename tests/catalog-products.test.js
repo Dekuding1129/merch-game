@@ -53,7 +53,7 @@ test('keyboard product shortcuts do not interfere with text entry', () => {
 test('delivery form starts with country and supports browser autofill', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(index, /id="deliveryCountry"[^>]*autocomplete="country-name"/);
-  assert.match(index, /id="deliveryCountry"[\s\S]*Loading countries/);
+  assert.match(index, /id="deliveryCountry"[\s\S]*<option value="" selected><\/option>/);
   assert.match(index, /autocomplete="name"/);
   assert.match(index, /autocomplete="street-address"/);
 });
@@ -79,4 +79,12 @@ test('city and postal fields remain writable with dropdown suggestions', () => {
   assert.match(index, /id="deliveryCity"[^>]*list="deliveryCityOptions"/);
   assert.match(index, /id="deliveryPostal"[^>]*list="deliveryPostalOptions"/);
   assert.match(viewer, /els\.deliveryPostal\.disabled = false/);
+});
+
+test('location controls do not show instructional placeholder text', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /id="deliveryCountry"[^>]*><option value="" selected><\/option>/);
+  assert.match(index, /id="deliveryCity"[^>]*placeholder=""/);
+  assert.match(index, /id="deliveryPostal"[^>]*placeholder=""/);
+  assert.match(viewer, /setOptions\(els\.deliveryCountry, '', data\.countries\)/);
 });

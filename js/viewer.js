@@ -568,17 +568,17 @@
     async function loadCountries() {
       try {
         const data = await getLocationData();
-        setOptions(els.deliveryCountry, 'Choose country...', data.countries);
+        setOptions(els.deliveryCountry, '', data.countries);
       } catch {
-        setOptions(els.deliveryCountry, 'Location data unavailable', [], true);
+        setOptions(els.deliveryCountry, '', [], true);
       }
     }
 
     async function updateDeliveryRegions() {
-      setOptions(els.deliveryRegion, 'Loading regions...', [], true);
-      setOptions(els.deliveryCity, 'Choose region first...', [], true);
+      setOptions(els.deliveryRegion, '', [], true);
+      setOptions(els.deliveryCity, '', [], true);
       els.deliveryPostal.value = '';
-      els.deliveryPostal.placeholder = 'Choose city first...';
+      els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = true;
       setSuggestions(els.deliveryPostalOptions, []);
       const data = await getLocationData();
@@ -588,7 +588,7 @@
 
     async function updateDeliveryCities() {
       els.deliveryPostal.value = '';
-      els.deliveryPostal.placeholder = 'Choose city first...';
+      els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = true;
       setSuggestions(els.deliveryPostalOptions, []);
       els.deliveryCity.value = '';
@@ -596,14 +596,14 @@
       const data = await getLocationData();
       const cities = data.cities?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}`] || [];
       els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
-      els.deliveryCity.placeholder = cities.length ? 'Search city...' : 'No cities found';
+      els.deliveryCity.placeholder = cities.length ? '' : '';
       els.deliveryCity.disabled = !cities.length;
     }
 
     async function updateDeliveryPostal() {
       const city = els.deliveryCity.value.trim();
       if (!city) { els.deliveryPostal.value = '';
-      els.deliveryPostal.placeholder = 'Choose city first...';
+      els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = true;
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
