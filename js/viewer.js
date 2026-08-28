@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryPostal: document.querySelector('#deliveryPostal')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
     };
 
     let active = 0;
@@ -561,6 +561,10 @@
       select.disabled = disabled;
     }
 
+    function setSuggestions(list, values) {
+      list.innerHTML = values.map(value => `<option value="${value}"></option>`).join('');
+    }
+
     async function loadCountries() {
       try {
         const data = await getLocationData();
@@ -573,14 +577,20 @@
     async function updateDeliveryRegions() {
       setOptions(els.deliveryRegion, 'Loading regions...', [], true);
       setOptions(els.deliveryCity, 'Choose region first...', [], true);
-      setOptions(els.deliveryPostal, 'Choose city first...', [], true);
+      els.deliveryPostal.value = '';
+      els.deliveryPostal.placeholder = 'Choose city first...';
+      els.deliveryPostal.disabled = true;
+      setSuggestions(els.deliveryPostalOptions, []);
       const data = await getLocationData();
       const regions = data.regions?.[els.deliveryCountry.value] || [];
       setOptions(els.deliveryRegion, 'Choose region / province...', regions, !regions.length);
     }
 
     async function updateDeliveryCities() {
-      setOptions(els.deliveryPostal, 'Choose city first...', [], true);
+      els.deliveryPostal.value = '';
+      els.deliveryPostal.placeholder = 'Choose city first...';
+      els.deliveryPostal.disabled = true;
+      setSuggestions(els.deliveryPostalOptions, []);
       els.deliveryCity.value = '';
       els.deliveryCity.disabled = true;
       const data = await getLocationData();
@@ -592,10 +602,15 @@
 
     async function updateDeliveryPostal() {
       const city = els.deliveryCity.value.trim();
-      if (!city) { setOptions(els.deliveryPostal, 'Choose city first...', [], true); return; }
+      if (!city) { els.deliveryPostal.value = '';
+      els.deliveryPostal.placeholder = 'Choose city first...';
+      els.deliveryPostal.disabled = true;
+      setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
       const postalCodes = data.postal?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
-      setOptions(els.deliveryPostal, postalCodes.length ? 'Choose postal code...' : 'No postal code found', postalCodes, !postalCodes.length);
+      setSuggestions(els.deliveryPostalOptions, postalCodes);
+      els.deliveryPostal.placeholder = postalCodes.length ? 'Choose or type postal code...' : 'Type postal code...';
+      els.deliveryPostal.disabled = false;
     }
 
     async function saveDeliveryDetails(event) {

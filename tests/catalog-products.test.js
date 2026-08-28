@@ -73,3 +73,10 @@ test('location fields use dependent dropdowns', () => {
   assert.match(viewer, /data\.cities/);
   assert.match(viewer, /data\.postal/);
 });
+
+test('city and postal fields remain writable with dropdown suggestions', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /id="deliveryCity"[^>]*list="deliveryCityOptions"/);
+  assert.match(index, /id="deliveryPostal"[^>]*list="deliveryPostalOptions"/);
+  assert.match(viewer, /els\.deliveryPostal\.disabled = false/);
+});
