@@ -1,8 +1,13 @@
 const http = require('node:http');
 const crypto = require('node:crypto');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const PORT = Number(process.env.PORT || 8787);
 const orders = new Map();
+const geodataPath = path.join(__dirname, 'data', 'geodata.json');
+let geodata = null;
+try { geodata = JSON.parse(fs.readFileSync(geodataPath, 'utf8')); } catch { /* Run backend/setup-geodata.py first for worldwide data. */ }
 
 const products = {
   'mizrach-pinaz-t-shirt': { name: 'Mizrach Pinaz T-Shirt', price: 42, options: ['XS', 'S', 'M', 'L', 'XL', '2XL'] },
@@ -61,6 +66,25 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return send(res, 204, {});
   if (req.method === 'GET' && req.url === '/api/health') return send(res, 200, { ok: true, mode: 'demo', persistence: 'memory-only', payments: 'disabled' });
   if (req.method === 'GET' && req.url === '/api/products') return send(res, 200, { products });
+  if (req.method === 'GET' && req.url === '/api/locations/status') return send(res, 200, { ok: true, source: geodata ? 'GeoNames' : 'not-built', countries: geodata?.countries.length || 0 });
+  if (req.method === 'GET' && req.url === '/api/locations/countries') return send(res, 200, { countries: geodata?.countries || [] });
+  if (req.method === 'GET' && req.url.startsWith('/api/locations/regions')) {
+    const country = new URL(req.url, 'http://localhost').searchParams.get('country');
+    return send(res, 200, { regions: geodata?.regions?.[country] || [] });
+  }
+  if (req.method === 'GET' && req.url.startsWith('/api/locations/cities')) {
+    const query = new URL(req.url, 'http://localhost').searchParams;
+    const country = query.get('country');
+    const region = query.get('region');
+    const search = (query.get('q') || '').trim().toLocaleLowerCase();
+    const cities = geodata?.cities?.[`${country}.${region}`] || [];
+    return send(res, 200, { cities: search ? cities.filter(city => city.name.toLocaleLowerCase().includes(search)).slice(0, 100) : cities.slice(0, 100) });
+  }
+  if (req.method === 'GET' && req.url.startsWith('/api/locations/postal-codes')) {
+    const query = new URL(req.url, 'http://localhost').searchParams;
+    const key = `${query.get('country')}.${query.get('region')}.${(query.get('city') || '').toLocaleLowerCase()}`;
+    return send(res, 200, { postalCodes: geodata?.postal?.[key] || [] });
+  }
   if (req.method === 'POST' && req.url === '/api/checkout/quote') {
     try {
       const input = await readJson(req);

@@ -103,9 +103,9 @@
       <p class="delivery-note">Placeholder checkout: your details stay in this browser session and are not sent or saved yet.</p>
       <form id="deliveryForm">
         <div class="delivery-grid">
-          <div class="field delivery-wide"><label for="deliveryCountry">Country</label><select id="deliveryCountry" name="country" autocomplete="country-name" required><option value="" selected>Choose country...</option><option>Philippines</option><option>United States</option><option>Canada</option><option>Australia</option><option>United Kingdom</option><option>Japan</option><option>Singapore</option><option>Other</option></select></div>
+          <div class="field delivery-wide"><label for="deliveryCountry">Country</label><select id="deliveryCountry" name="country" autocomplete="country-name" required><option value="" selected>Loading countries...</option></select></div>
           <div class="field"><label for="deliveryRegion">Region / province</label><select id="deliveryRegion" name="region" autocomplete="address-level1" required disabled><option value="" selected>Choose country first...</option></select></div>
-          <div class="field"><label for="deliveryCity">City / municipality</label><select id="deliveryCity" name="city" autocomplete="address-level2" required disabled><option value="" selected>Choose region first...</option></select></div>
+          <div class="field"><label for="deliveryCity">City / municipality</label><input id="deliveryCity" name="city" list="deliveryCityOptions" autocomplete="address-level2" placeholder="Search city..." required disabled><datalist id="deliveryCityOptions"></datalist></div>
           <div class="field"><label for="deliveryPostal">Postal code</label><select id="deliveryPostal" name="postal" autocomplete="postal-code" required disabled><option value="" selected>Choose city first...</option></select></div>
           <div class="field delivery-wide"><label for="deliveryAddress">Street address</label><input id="deliveryAddress" name="address" autocomplete="street-address" required></div>
           <div class="field"><label for="deliveryName">Full name</label><input id="deliveryName" name="name" autocomplete="name" required></div>
@@ -130,6 +130,6 @@
   <script src="js/hoodie-model-data.js?v=20260729-1740" defer></script>
   <script src="js/hoodie-3d.js?v=20260730-2202" defer></script>
   <script src="js/keychain-3d.js?v=20260730-2118" defer></script>
-  <script src="js/viewer.js?v=20260828-1730" defer></script>
+  <script src="js/viewer.js?v=20260828-1800" defer></script>
 </body>
 </html>

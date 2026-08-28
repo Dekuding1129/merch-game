@@ -7,10 +7,11 @@ This is a free, local-only backend for testing the storefront flow before adding
 From the project directory:
 
 ```bash
+python3 backend/setup-geodata.py
 node backend/server.js
 ```
 
-The API listens on port `8787` and binds to all local network interfaces so a phone on the same Wi-Fi can reach it.
+The first command downloads the current GeoNames country, administrative, city, and postal-code extracts and builds `backend/data/geodata.json`. The generated data is intentionally ignored by Git. The API listens on port `8787` and binds to all local network interfaces so a phone on the same Wi-Fi can reach it.
 
 ## Endpoints
 
@@ -18,6 +19,12 @@ The API listens on port `8787` and binds to all local network interfaces so a ph
 - `GET /api/products` — returns the trusted product catalog and prices.
 - `POST /api/checkout/quote` — validates cart items and delivery details, then creates a temporary demo checkout reference.
 - `GET /api/orders/:id` — reads back a demo checkout without returning personal details.
+- `GET /api/locations/countries` — returns GeoNames countries.
+- `GET /api/locations/regions?country=PH` — returns administrative regions.
+- `GET /api/locations/cities?country=PH&region=...&q=cat` — returns searchable cities.
+- `GET /api/locations/postal-codes?country=PH&region=...&city=Catbalogan` — returns postal codes.
+
+The frontend loads countries from the backend, loads regions after country selection, offers searchable city suggestions after region selection, and loads postal-code choices after city selection.
 
 ## Important limits
 
@@ -26,6 +33,7 @@ The API listens on port `8787` and binds to all local network interfaces so a ph
 - Personal information exists only in server memory and disappears when the process stops.
 - This is not production security or a public checkout endpoint.
 - Before launch, add HTTPS, authentication/abuse protection, a real database, and a payment provider webhook.
+- GeoNames attribution is required; see `backend/GEONAMES_ATTRIBUTION.md`.
 
 ## Phone testing
 

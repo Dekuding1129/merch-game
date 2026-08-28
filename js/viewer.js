@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryPostal: document.querySelector('#deliveryPostal')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryPostal: document.querySelector('#deliveryPostal')
     };
 
     let active = 0;
@@ -61,15 +61,7 @@
     const cart = [];
     let deliveryDetails = null;
     const apiBase = new URLSearchParams(window.location.search).get('api') || `${window.location.protocol}//${window.location.hostname}:8787`;
-    const deliveryLocations = {
-      Philippines: {
-        'Eastern Visayas': { Catbalogan: '6700', Tacloban: '6500', Calbayog: '6710', Borongan: '6800' },
-        'Metro Manila': { Manila: '1000', 'Quezon City': '1100', Makati: '1200', Pasig: '1600' },
-        Cebu: { 'Cebu City': '6000', 'Lapu-Lapu': '6015', Mandaue: '6014' },
-        'Davao Region': { 'Davao City': '8000', Tagum: '8100', Panabo: '8105' },
-        Other: { 'Other city / municipality': '' }
-      }
-    };
+
     let activeFrames = [];
     let sequenceToken = 0;
     let usingStaticPreview = false;
@@ -557,27 +549,46 @@
     }
 
     function setOptions(select, placeholder, values, disabled = false) {
-      select.innerHTML = `<option value="" selected>${placeholder}</option>${values.map(value => `<option>${value}</option>`).join('')}`;
+      select.innerHTML = `<option value="" selected>${placeholder}</option>${values.map(value => `<option value="${value.code || value}">${value.name || value}</option>`).join('')}`;
       select.disabled = disabled;
     }
 
-    function updateDeliveryRegions() {
-      const locations = deliveryLocations[els.deliveryCountry.value];
-      setOptions(els.deliveryRegion, locations ? 'Choose region / province...' : 'Choose country first...', locations ? Object.keys(locations) : [], !locations);
+    async function loadCountries() {
+      try {
+        const response = await fetch(`${apiBase}/api/locations/countries`);
+        const result = await response.json();
+        setOptions(els.deliveryCountry, 'Choose country...', result.countries);
+      } catch {
+        setOptions(els.deliveryCountry, 'Backend unavailable', [], true);
+      }
+    }
+
+    async function updateDeliveryRegions() {
+      setOptions(els.deliveryRegion, 'Loading regions...', [], true);
       setOptions(els.deliveryCity, 'Choose region first...', [], true);
       setOptions(els.deliveryPostal, 'Choose city first...', [], true);
+      const response = await fetch(`${apiBase}/api/locations/regions?country=${encodeURIComponent(els.deliveryCountry.value)}`);
+      const result = await response.json();
+      setOptions(els.deliveryRegion, 'Choose region / province...', result.regions, !result.regions.length);
     }
 
-    function updateDeliveryCities() {
-      const locations = deliveryLocations[els.deliveryCountry.value];
-      const cities = locations?.[els.deliveryRegion.value];
-      setOptions(els.deliveryCity, cities ? 'Choose city / municipality...' : 'Choose region first...', cities ? Object.keys(cities) : [], !cities);
+    async function updateDeliveryCities() {
       setOptions(els.deliveryPostal, 'Choose city first...', [], true);
+      els.deliveryCity.value = '';
+      els.deliveryCity.disabled = true;
+      const response = await fetch(`${apiBase}/api/locations/cities?country=${encodeURIComponent(els.deliveryCountry.value)}&region=${encodeURIComponent(els.deliveryRegion.value)}`);
+      const result = await response.json();
+      els.deliveryCityOptions.innerHTML = result.cities.map(city => `<option value="${city.name}"></option>`).join('');
+      els.deliveryCity.placeholder = result.cities.length ? 'Search city...' : 'No cities found';
+      els.deliveryCity.disabled = !result.cities.length;
     }
 
-    function updateDeliveryPostal() {
-      const postal = deliveryLocations[els.deliveryCountry.value]?.[els.deliveryRegion.value]?.[els.deliveryCity.value];
-      setOptions(els.deliveryPostal, postal ? 'Choose postal code...' : 'Choose city first...', postal ? [postal] : [], !postal);
+    async function updateDeliveryPostal() {
+      const city = els.deliveryCity.value.trim();
+      if (!city) { setOptions(els.deliveryPostal, 'Choose city first...', [], true); return; }
+      const response = await fetch(`${apiBase}/api/locations/postal-codes?country=${encodeURIComponent(els.deliveryCountry.value)}&region=${encodeURIComponent(els.deliveryRegion.value)}&city=${encodeURIComponent(city)}`);
+      const result = await response.json();
+      setOptions(els.deliveryPostal, result.postalCodes.length ? 'Choose postal code...' : 'No postal code found', result.postalCodes, !result.postalCodes.length);
     }
 
     async function saveDeliveryDetails(event) {
@@ -657,6 +668,7 @@
     els.deliveryCountry.addEventListener('change', updateDeliveryRegions);
     els.deliveryRegion.addEventListener('change', updateDeliveryCities);
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
+    loadCountries();
 
     Object.entries(readyEvents).forEach(([model, eventName]) => {
       window.addEventListener(eventName, () => {

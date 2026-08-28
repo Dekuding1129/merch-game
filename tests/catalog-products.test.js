@@ -53,7 +53,7 @@ test('keyboard product shortcuts do not interfere with text entry', () => {
 test('delivery form starts with country and supports browser autofill', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(index, /id="deliveryCountry"[^>]*autocomplete="country-name"/);
-  assert.match(index, /id="deliveryCountry"[\s\S]*<option>Philippines<\/option>/);
+  assert.match(index, /id="deliveryCountry"[\s\S]*Loading countries/);
   assert.match(index, /autocomplete="name"/);
   assert.match(index, /autocomplete="street-address"/);
 });
@@ -63,7 +63,11 @@ test('location fields use dependent dropdowns', () => {
   assert.match(index, /id="deliveryRegion"[^>]*disabled/);
   assert.match(index, /id="deliveryCity"[^>]*disabled/);
   assert.match(index, /id="deliveryPostal"[^>]*disabled/);
+  assert.match(index, /list="deliveryCityOptions"/);
   assert.match(viewer, /updateDeliveryRegions\(\)/);
   assert.match(viewer, /updateDeliveryCities\(\)/);
   assert.match(viewer, /updateDeliveryPostal\(\)/);
+  assert.match(viewer, /api\/locations\/countries/);
+  assert.match(viewer, /api\/locations\/cities/);
+  assert.match(viewer, /api\/locations\/postal-codes/);
 });
