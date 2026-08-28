@@ -10,7 +10,7 @@
         specs: [['Fabric', 'Premium cotton'], ['Print', 'High quality'], ['Finish', 'Durable stitching']]
       },
       {
-        name: 'Mizrach Pinaz Tumbler', rarity: 'Signature', price: null, stock: 'Coming soon', color: '#08090c', print: '#d9a514', kind: 'tumbler',
+        name: 'Mizrach Pinaz Tumbler', rarity: 'Signature', price: 28, stock: 'In stock', color: '#08090c', print: '#d9a514', kind: 'tumbler',
         model3d: 'cup',
         optionLabel: 'Select option', options: ['One size'],
         fallbackImage: 'images/tumbler/preview.png',
@@ -19,14 +19,14 @@
         specs: [['Finish', 'Matte black'], ['Lid', 'Low profile'], ['Print', 'Front graphic']]
       },
       {
-        name: 'Mizrach Pinaz Hoodie', rarity: 'Signature', price: null, stock: 'Coming soon', color: '#080a0d', print: '#d9a514', kind: 'hoodie',
+        name: 'Mizrach Pinaz Hoodie', rarity: 'Signature', price: 68, stock: 'In stock', color: '#080a0d', print: '#d9a514', kind: 'hoodie',
         model3d: 'hoodie',
         optionLabel: 'Select size', options: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
         description: 'Black pullover hoodie with a dimensional hood, kangaroo pocket, drawstrings, and front-only Mizrach Pinaz artwork.',
         specs: [['Finish', 'Black fleece'], ['Construction', 'Pullover hood'], ['Print', 'Front graphic']]
       },
       {
-        name: 'Mizrach Pinaz Keychain', rarity: 'Signature', price: null, stock: 'Coming soon', color: '#050607', print: '#d9a514', kind: 'keychain',
+        name: 'Mizrach Pinaz Keychain', rarity: 'Signature', price: 18, stock: 'In stock', color: '#050607', print: '#d9a514', kind: 'keychain',
         model3d: 'keychain',
         optionLabel: 'Select option', options: ['One size'],
 

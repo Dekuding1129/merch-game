@@ -11,3 +11,15 @@ test('catalog contains only the four Mizrach Pinaz products', () => {
   assert.doesNotMatch(catalog, /kind:\s*'jacket'/);
   assert.equal((catalog.match(/\bname:\s*'/g) || []).length, 4);
 });
+
+test('every catalog product has an explicit price', () => {
+  for (const [name, price] of [
+    ['Mizrach Pinaz T-Shirt', 42],
+    ['Mizrach Pinaz Tumbler', 28],
+    ['Mizrach Pinaz Hoodie', 68],
+    ['Mizrach Pinaz Keychain', 18]
+  ]) {
+    assert.match(catalog, new RegExp(`name: '${name.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}'[^\\n]*price: ${price}\\b`));
+  }
+  assert.doesNotMatch(catalog, /price:\s*null/);
+});
