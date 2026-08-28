@@ -60,6 +60,7 @@
     let pitchStart = 0;
     const cart = [];
     let deliveryDetails = null;
+    const apiBase = new URLSearchParams(window.location.search).get('api') || `${window.location.protocol}//${window.location.hostname}:8787`;
     let activeFrames = [];
     let sequenceToken = 0;
     let usingStaticPreview = false;
@@ -546,16 +547,41 @@
       els.deliveryModal.hidden = true;
     }
 
-    function saveDeliveryDetails(event) {
+    async function saveDeliveryDetails(event) {
       event.preventDefault();
-      deliveryDetails = Object.fromEntries(new FormData(els.deliveryForm).entries());
+      const delivery = Object.fromEntries(new FormData(els.deliveryForm).entries());
       const p = products[active];
+      const sku = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const submit = els.deliveryForm.querySelector('[type="submit"]');
+      submit.disabled = true;
+      submit.textContent = 'Checking…';
+      let response;
+      try {
+        response = await fetch(`${apiBase}/api/checkout/quote`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ sku, quantity: 1, option: els.size.value }], delivery }) });
+      } catch {
+        submit.disabled = false;
+        submit.textContent = 'Continue — BUY';
+        els.toast.querySelector('strong').textContent = 'Backend unavailable';
+        els.toastMessage.textContent = 'Start the local backend, then try BUY again.';
+        els.toast.classList.add('show');
+        return;
+      }
+      const result = await response.json();
+      if (!response.ok) {
+        submit.disabled = false;
+        submit.textContent = 'Continue — BUY';
+        els.toast.querySelector('strong').textContent = 'Could not continue';
+        els.toastMessage.textContent = result.error || 'Check the delivery details and try again.';
+        els.toast.classList.add('show');
+        return;
+      }
+      deliveryDetails = delivery;
       cart.push({ ...p, option: els.size.value });
       els.cartCount.textContent = cart.length;
       renderCart();
       closeDeliveryForm();
       els.toast.querySelector('strong').textContent = 'Details captured';
-      els.toastMessage.textContent = `${p.name} added for delivery. Checkout connection still needs to be added.`;
+      els.toastMessage.textContent = `${p.name} added. Demo reference: ${result.checkout.id}. No payment taken.`;
       els.toast.classList.add('show');
       clearTimeout(addToCart.toastTimer);
       addToCart.toastTimer = setTimeout(() => els.toast.classList.remove('show'), 3200);

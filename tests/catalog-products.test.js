@@ -39,3 +39,9 @@ test('BUY opens a required delivery-details form without local persistence', () 
   assert.match(viewer, /Object\.fromEntries\(new FormData\(els\.deliveryForm\)\.entries\(\)\)/);
   assert.doesNotMatch(viewer, /localStorage\.setItem\([^)]*delivery/);
 });
+
+test('delivery submission uses the demo backend before adding inventory', () => {
+  assert.match(viewer, /fetch\(`\$\{apiBase\}\/api\/checkout\/quote`/);
+  assert.match(viewer, /payments disabled|No payment taken/i);
+  assert.match(viewer, /if \(!response\.ok\)/);
+});
