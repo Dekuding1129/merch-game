@@ -70,6 +70,7 @@ test('location fields use dependent dropdowns', () => {
   assert.match(viewer, /fetch\('data\/geodata\.json'\)/);
   assert.match(viewer, /getLocationData\(\)/);
   assert.match(viewer, /data\.regions/);
+  assert.match(viewer, /data\.provinces/);
   assert.match(viewer, /data\.cities/);
   assert.match(viewer, /data\.postal/);
 });
@@ -97,4 +98,5 @@ test('city and postal inputs stay writable before dependent suggestions load', (
 
 test('location lookup defaults to Philippines', () => {
   assert.match(viewer, /function countryCode\(\)\s*\{\s*return 'PH'/);
+  assert.match(viewer, /function regionCode\(\)/);
 });

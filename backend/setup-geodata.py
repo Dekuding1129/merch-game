@@ -13,6 +13,7 @@ DATA.mkdir(exist_ok=True)
 SOURCES = {
     'countryInfo.txt': 'https://download.geonames.org/export/dump/countryInfo.txt',
     'admin1CodesASCII.txt': 'https://download.geonames.org/export/dump/admin1CodesASCII.txt',
+    'admin2Codes.txt': 'https://download.geonames.org/export/dump/admin2Codes.txt',
     'cities500.zip': 'https://download.geonames.org/export/dump/cities500.zip',
     'postal.zip': 'https://download.geonames.org/export/zip/allCountries.zip',
 }
@@ -32,6 +33,7 @@ def lines_from_zip(path):
 def main():
     country_path = download('countryInfo.txt', SOURCES['countryInfo.txt'])
     admin_path = download('admin1CodesASCII.txt', SOURCES['admin1CodesASCII.txt'])
+    admin2_path = download('admin2Codes.txt', SOURCES['admin2Codes.txt'])
     cities_path = download('cities500.zip', SOURCES['cities500.zip'])
     postal_path = download('postal.zip', SOURCES['postal.zip'])
 
@@ -45,6 +47,12 @@ def main():
         if len(row) >= 2 and '.' in row[0]:
             cc, code = row[0].split('.', 1)
             regions[f'{cc}.{code}'] = row[1]
+
+    provinces = {}
+    for row in csv.reader(admin2_path.read_text(encoding='utf-8').splitlines(), delimiter='\t'):
+        if len(row) >= 2 and row[0].count('.') >= 2:
+            cc, admin1, admin2 = row[0].split('.', 2)
+            if cc == 'PH': provinces.setdefault(cc, []).append({'code': f'{admin1}.{admin2}', 'name': row[1]})
 
     cities = {}
     with lines_from_zip(cities_path) as handle:
@@ -64,7 +72,7 @@ def main():
                 key = f'{cc}.{admin1}.{place.casefold()}'
                 postal.setdefault(key, []).append(code)
 
-    output = {'countries': [{'code': cc, 'name': name} for cc, name in sorted(countries.items(), key=lambda item: item[1])], 'regions': {}, 'cities': {}, 'postal': {}}
+    output = {'countries': [{'code': cc, 'name': name} for cc, name in sorted(countries.items(), key=lambda item: item[1])], 'regions': {}, 'provinces': provinces, 'cities': {}, 'postal': {}}
     for key, name in regions.items():
         output['regions'].setdefault(key.split('.')[0], []).append({'code': key.split('.', 1)[1], 'name': name})
     for cc in output['regions']:

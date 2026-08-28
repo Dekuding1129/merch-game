@@ -569,6 +569,10 @@
       return 'PH';
     }
 
+    function regionCode() {
+      return els.deliveryRegion.value.split('.')[0];
+    }
+
     async function updateDeliveryRegions() {
       setOptions(els.deliveryRegion, '', [], true);
       els.deliveryCityOptions.innerHTML = '';
@@ -578,7 +582,8 @@
       setSuggestions(els.deliveryPostalOptions, []);
       const data = await getLocationData();
       const regions = data.regions?.[countryCode()] || [];
-      setOptions(els.deliveryRegion, '', regions, !regions.length);
+      const provinces = data.provinces?.[countryCode()] || [];
+      setOptions(els.deliveryRegion, '', [...regions, ...provinces], !(regions.length || provinces.length));
     }
 
     async function updateDeliveryCities() {
@@ -589,7 +594,7 @@
       els.deliveryCity.value = '';
 
       const data = await getLocationData();
-      const cities = data.cities?.[`${countryCode()}.${els.deliveryRegion.value}`] || [];
+      const cities = data.cities?.[`${countryCode()}.${regionCode()}`] || [];
       els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
       els.deliveryCity.placeholder = cities.length ? '' : '';
       els.deliveryCity.disabled = false;
@@ -602,7 +607,7 @@
 
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
-      const postalCodes = data.postal?.[`${countryCode()}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
+      const postalCodes = data.postal?.[`${countryCode()}.${regionCode()}.${city.toLocaleLowerCase()}`] || [];
       setSuggestions(els.deliveryPostalOptions, postalCodes);
       els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = false;
