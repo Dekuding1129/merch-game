@@ -579,37 +579,37 @@
       setOptions(els.deliveryCity, '', [], true);
       els.deliveryPostal.value = '';
       els.deliveryPostal.placeholder = '';
-      els.deliveryPostal.disabled = true;
+
       setSuggestions(els.deliveryPostalOptions, []);
       const data = await getLocationData();
       const regions = data.regions?.[els.deliveryCountry.value] || [];
-      setOptions(els.deliveryRegion, 'Choose region / province...', regions, !regions.length);
+      setOptions(els.deliveryRegion, '', regions, !regions.length);
     }
 
     async function updateDeliveryCities() {
       els.deliveryPostal.value = '';
       els.deliveryPostal.placeholder = '';
-      els.deliveryPostal.disabled = true;
+
       setSuggestions(els.deliveryPostalOptions, []);
       els.deliveryCity.value = '';
-      els.deliveryCity.disabled = true;
+
       const data = await getLocationData();
       const cities = data.cities?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}`] || [];
       els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
       els.deliveryCity.placeholder = cities.length ? '' : '';
-      els.deliveryCity.disabled = !cities.length;
+      els.deliveryCity.disabled = false;
     }
 
     async function updateDeliveryPostal() {
       const city = els.deliveryCity.value.trim();
       if (!city) { els.deliveryPostal.value = '';
       els.deliveryPostal.placeholder = '';
-      els.deliveryPostal.disabled = true;
+
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
       const postalCodes = data.postal?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
       setSuggestions(els.deliveryPostalOptions, postalCodes);
-      els.deliveryPostal.placeholder = postalCodes.length ? 'Choose or type postal code...' : 'Type postal code...';
+      els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = false;
     }
 

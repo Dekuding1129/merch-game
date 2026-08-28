@@ -61,8 +61,8 @@ test('delivery form starts with country and supports browser autofill', () => {
 test('location fields use dependent dropdowns', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(index, /id="deliveryRegion"[^>]*disabled/);
-  assert.match(index, /id="deliveryCity"[^>]*disabled/);
-  assert.match(index, /id="deliveryPostal"[^>]*disabled/);
+  assert.doesNotMatch(index, /id="deliveryCity"[^>]*disabled/);
+  assert.doesNotMatch(index, /id="deliveryPostal"[^>]*disabled/);
   assert.match(index, /list="deliveryCityOptions"/);
   assert.match(viewer, /updateDeliveryRegions\(\)/);
   assert.match(viewer, /updateDeliveryCities\(\)/);
@@ -87,4 +87,11 @@ test('location controls do not show instructional placeholder text', () => {
   assert.match(index, /id="deliveryCity"[^>]*placeholder=""/);
   assert.match(index, /id="deliveryPostal"[^>]*placeholder=""/);
   assert.match(viewer, /setOptions\(els\.deliveryCountry, '', data\.countries\)/);
+});
+
+test('city and postal inputs stay writable before dependent suggestions load', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.doesNotMatch(index, /id="deliveryCity"[^>]*disabled/);
+  assert.doesNotMatch(index, /id="deliveryPostal"[^>]*disabled/);
+  assert.match(viewer, /els\.deliveryCity\.disabled = false/);
 });
