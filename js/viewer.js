@@ -715,7 +715,7 @@
     });
 
     document.addEventListener('keydown', e => {
-      if (e.target.matches('select, button')) return;
+      if (e.target.matches('input, textarea, select, button, [contenteditable="true"]')) return;
       if (e.key.toLowerCase() === 's') { e.preventDefault(); selectProduct(active + 1); }
       if (e.key.toLowerCase() === 'w') { e.preventDefault(); selectProduct(active - 1); }
       if (e.key === 'ArrowLeft') {

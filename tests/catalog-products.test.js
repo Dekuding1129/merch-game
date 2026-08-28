@@ -45,3 +45,7 @@ test('delivery submission uses the demo backend before adding inventory', () => 
   assert.match(viewer, /payments disabled|No payment taken/i);
   assert.match(viewer, /if \(!response\.ok\)/);
 });
+
+test('keyboard product shortcuts do not interfere with text entry', () => {
+  assert.match(viewer, /e\.target\.matches\('input, textarea, select, button, \[contenteditable="true"\]'\)/);
+});
