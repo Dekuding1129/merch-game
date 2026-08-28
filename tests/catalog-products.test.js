@@ -23,3 +23,8 @@ test('every catalog product has an explicit price', () => {
   }
   assert.doesNotMatch(catalog, /price:\s*null/);
 });
+
+test('available purchase controls are labeled BUY', () => {
+  assert.match(viewer, /els\.mobileDockAction\.textContent = available \? 'BUY' : 'Notify me'/);
+  assert.match(viewer, /els\.equip\.textContent = available \? 'BUY' : 'Notify me'/);
+});

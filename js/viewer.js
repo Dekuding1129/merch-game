@@ -401,7 +401,7 @@
       const available = p.price != null;
       els.mobileDockName.textContent = p.name;
       els.mobileDockPrice.textContent = available ? `$${p.price}` : 'Coming soon';
-      els.mobileDockAction.textContent = available ? 'Equip' : 'Notify me';
+      els.mobileDockAction.textContent = available ? 'BUY' : 'Notify me';
       els.mobileDock.classList.toggle('is-unavailable', !available);
     }
 
@@ -452,7 +452,7 @@
         els.size.value = '';
         els.size.disabled = !available;
         els.purchase.classList.toggle('is-unavailable', !available);
-        els.equip.textContent = available ? 'Equip item — E' : 'Notify me';
+        els.equip.textContent = available ? 'BUY' : 'Notify me';
         els.equip.dataset.mode = available ? 'equip' : 'notify';
         updateMobileDock(p);
         updateTicker(p);
