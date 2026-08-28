@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryPostal: document.querySelector('#deliveryPostal')
     };
 
     let active = 0;
@@ -61,6 +61,15 @@
     const cart = [];
     let deliveryDetails = null;
     const apiBase = new URLSearchParams(window.location.search).get('api') || `${window.location.protocol}//${window.location.hostname}:8787`;
+    const deliveryLocations = {
+      Philippines: {
+        'Eastern Visayas': { Catbalogan: '6700', Tacloban: '6500', Calbayog: '6710', Borongan: '6800' },
+        'Metro Manila': { Manila: '1000', 'Quezon City': '1100', Makati: '1200', Pasig: '1600' },
+        Cebu: { 'Cebu City': '6000', 'Lapu-Lapu': '6015', Mandaue: '6014' },
+        'Davao Region': { 'Davao City': '8000', Tagum: '8100', Panabo: '8105' },
+        Other: { 'Other city / municipality': '' }
+      }
+    };
     let activeFrames = [];
     let sequenceToken = 0;
     let usingStaticPreview = false;
@@ -547,6 +556,30 @@
       els.deliveryModal.hidden = true;
     }
 
+    function setOptions(select, placeholder, values, disabled = false) {
+      select.innerHTML = `<option value="" selected>${placeholder}</option>${values.map(value => `<option>${value}</option>`).join('')}`;
+      select.disabled = disabled;
+    }
+
+    function updateDeliveryRegions() {
+      const locations = deliveryLocations[els.deliveryCountry.value];
+      setOptions(els.deliveryRegion, locations ? 'Choose region / province...' : 'Choose country first...', locations ? Object.keys(locations) : [], !locations);
+      setOptions(els.deliveryCity, 'Choose region first...', [], true);
+      setOptions(els.deliveryPostal, 'Choose city first...', [], true);
+    }
+
+    function updateDeliveryCities() {
+      const locations = deliveryLocations[els.deliveryCountry.value];
+      const cities = locations?.[els.deliveryRegion.value];
+      setOptions(els.deliveryCity, cities ? 'Choose city / municipality...' : 'Choose region first...', cities ? Object.keys(cities) : [], !cities);
+      setOptions(els.deliveryPostal, 'Choose city first...', [], true);
+    }
+
+    function updateDeliveryPostal() {
+      const postal = deliveryLocations[els.deliveryCountry.value]?.[els.deliveryRegion.value]?.[els.deliveryCity.value];
+      setOptions(els.deliveryPostal, postal ? 'Choose postal code...' : 'Choose city first...', postal ? [postal] : [], !postal);
+    }
+
     async function saveDeliveryDetails(event) {
       event.preventDefault();
       const delivery = Object.fromEntries(new FormData(els.deliveryForm).entries());
@@ -621,6 +654,9 @@
     els.cancelDelivery.addEventListener('click', closeDeliveryForm);
     els.deliveryModal.addEventListener('click', event => { if (event.target === els.deliveryModal) closeDeliveryForm(); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && !els.deliveryModal.hidden) closeDeliveryForm(); });
+    els.deliveryCountry.addEventListener('change', updateDeliveryRegions);
+    els.deliveryRegion.addEventListener('change', updateDeliveryCities);
+    els.deliveryCity.addEventListener('change', updateDeliveryPostal);
 
     Object.entries(readyEvents).forEach(([model, eventName]) => {
       window.addEventListener(eventName, () => {
