@@ -49,3 +49,11 @@ test('delivery submission uses the demo backend before adding inventory', () => 
 test('keyboard product shortcuts do not interfere with text entry', () => {
   assert.match(viewer, /e\.target\.matches\('input, textarea, select, button, \[contenteditable="true"\]'\)/);
 });
+
+test('delivery form preselects a country and supports browser autofill', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /id="deliveryCountry"[^>]*autocomplete="country-name"/);
+  assert.match(index, /<option selected>Philippines<\/option>/);
+  assert.match(index, /autocomplete="name"/);
+  assert.match(index, /autocomplete="street-address"/);
+});
