@@ -5,8 +5,7 @@
         model3d: 'shirt',
         optionLabel: 'Select size', options: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
         fallbackImage: 'images/tshirt/preview.png',
-        sheet: 'images/tshirt/mizrach-pinaz-360.png',
-        sheetLabel: 'View full 360° product sheet',
+
         description: 'Premium black cotton T-shirt with the gold-and-white Mizrach Pinaz wing graphic and a clean back.',
         specs: [['Fabric', 'Premium cotton'], ['Print', 'High quality'], ['Finish', 'Durable stitching']]
       },
@@ -15,8 +14,7 @@
         model3d: 'cup',
         optionLabel: 'Select option', options: ['One size'],
         fallbackImage: 'images/tumbler/preview.png',
-        sheet: 'images/tumbler/reference.png',
-        sheetLabel: 'View product reference',
+
         description: 'Matte-black tapered travel tumbler with a low-profile lid and the gold-and-white Mizrach Pinaz wing graphic.',
         specs: [['Finish', 'Matte black'], ['Lid', 'Low profile'], ['Print', 'Front graphic']]
       },
@@ -31,8 +29,7 @@
         name: 'Mizrach Pinaz Keychain', rarity: 'Signature', price: null, stock: 'Coming soon', color: '#050607', print: '#d9a514', kind: 'keychain',
         model3d: 'keychain',
         optionLabel: 'Select option', options: ['One size'],
-        sheet: 'images/keychain/reference.png',
-        sheetLabel: 'View product reference',
+
         description: 'Round black Mizrach Pinaz keychain with a polished metal rim, linked chain, split ring, and front artwork.',
         specs: [['Finish', 'Gloss black'], ['Hardware', 'Metal ring and chain'], ['Print', 'Front graphic']]
       }
@@ -46,14 +43,8 @@
       stock: document.querySelector('#stock'), specs: document.querySelector('#specs'), size: document.querySelector('#size'), optionLabel: document.querySelector('label[for="size"]'), equip: document.querySelector('#equip'),
       cartButton: document.querySelector('#cartButton'), cartCount: document.querySelector('#cartCount'), cartPanel: document.querySelector('#cartPanel'),
       closeCart: document.querySelector('#closeCart'), cartItems: document.querySelector('#cartItems'), toast: document.querySelector('#toast'),
-      toastMessage: document.querySelector('#toastMessage'), sheetButton: document.querySelector('#productSheetButton'),
-      sheetDialog: document.querySelector('#productSheetDialog'), sheetImage: document.querySelector('#productSheetImage'), sheetTitle: document.querySelector('#productSheetTitle'),
-      closeSheet: document.querySelector('#closeProductSheet'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
-      purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailButton: document.querySelector('#productDetailButton'),
-      detailDialog: document.querySelector('#productDetailDialog'), closeDetail: document.querySelector('#closeProductDetail'), detailView: document.querySelector('#detailView'),
-      detailTitle: document.querySelector('#productDetailTitle'), detailPrintImage: document.querySelector('#detailPrintImage'), detailViewLabel: document.querySelector('#detailViewLabel'),
-      detailSpecLabel: document.querySelector('#detailSpecLabel'), detailHeading: document.querySelector('#detailHeading'), detailDescription: document.querySelector('#detailDescription'),
-      detailSpecs: document.querySelector('#detailSpecs'), detailTabs: document.querySelector('.detail-tabs'), detailHotspots: document.querySelector('.detail-hotspots'),
+      toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
+      purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
       mobileDockAction: document.querySelector('#mobileDockAction')
     };
@@ -422,49 +413,6 @@
       els.tickerTrack.innerHTML = sequence + sequence;
     }
 
-    function detailDefinitions(p) {
-      const values = Object.fromEntries(p.specs.map(([key, value]) => [key.toLowerCase(), value]));
-      return {
-        fabric: {
-          label: p.kind === 'tumbler' || p.kind === 'keychain' ? 'Surface' : 'Fabric',
-          heading: values.fabric || values.finish || values.shell || 'Material surface',
-          description: p.kind === 'tumbler' || p.kind === 'keychain'
-            ? 'A close inspection of the product surface, coating, and tactile finish.'
-            : 'A close inspection of the textile density, hand feel, and shape retention.'
-        },
-        print: {
-          label: 'Print',
-          heading: values.print || 'Mizrach artwork',
-          description: 'A focused view of the gold-and-white front mark, its edge definition, scale, and material contrast.'
-        },
-        construction: {
-          label: 'Construction',
-          heading: values.construction || values.hardware || values.finish || values.pockets || 'Built details',
-          description: 'Construction details, joins, stitching, and hardware presented without distracting from the product silhouette.'
-        }
-      };
-    }
-
-    function renderDetailMode(detail = 'fabric') {
-      const p = products[active];
-      const definitions = detailDefinitions(p);
-      const selected = definitions[detail] || definitions.fabric;
-      els.detailView.dataset.activeDetail = detail;
-      els.detailTitle.textContent = p.name;
-      els.detailViewLabel.textContent = `${selected.label} / ${detail === 'fabric' ? '01' : detail === 'print' ? '02' : '03'}`;
-      els.detailSpecLabel.textContent = selected.label;
-      els.detailHeading.textContent = selected.heading;
-      els.detailDescription.textContent = selected.description;
-      els.detailSpecs.innerHTML = p.specs.map(([key, value]) => `<div><dt>${key}</dt><dd>${value}</dd></div>`).join('');
-      els.detailPrintImage.src = p.sheet || p.fallbackImage || 'images/tshirt/logo-sharp.png';
-      els.detailPrintImage.alt = `${p.name} print and product detail`;
-      els.detailTabs.querySelectorAll('[data-detail]').forEach(button => button.classList.toggle('active', button.dataset.detail === detail));
-    }
-
-    function openDetailMode(detail = 'fabric') {
-      renderDetailMode(detail);
-      if (!els.detailDialog.open) els.detailDialog.showModal();
-    }
 
     function renderList() {
       els.list.innerHTML = products.map((p, i) => `<button class="select-item ${i === active ? 'active' : ''}" data-index="${i}" aria-current="${i === active ? 'true' : 'false'}"><span class="select-item__num">${String(i + 1).padStart(2, '0')}</span><span class="select-item__swatch" style="--swatch:${p.color}" aria-hidden="true"></span><span class="select-item__name">${p.name}</span><span class="select-item__rarity">${p.rarity}</span></button>`).join('');
@@ -496,9 +444,7 @@
         els.price.textContent = p.price == null ? 'TBD' : `$${p.price}`;
         els.stock.textContent = p.stock;
         els.specs.innerHTML = p.specs.map(([key, value]) => `<div class="spec"><dt>${key}</dt><dd>${value}</dd></div>`).join('');
-        els.sheetButton.hidden = !p.sheet;
-        els.sheetButton.dataset.src = p.sheet || '';
-        els.sheetButton.textContent = p.sheetLabel || 'View product reference';
+
         els.optionLabel.textContent = available ? p.optionLabel : 'Release status';
         els.size.innerHTML = available
           ? `<option value="">Choose option...</option>${p.options.map(option => `<option>${option}</option>`).join('')}`
@@ -557,7 +503,7 @@
         els.product.setAttribute('aria-label', `${products[active].name}, frame ${Math.round(((rotation % 360) + 360) % 360)} degrees. Drag to rotate.`);
       } else if (usingStaticPreview) {
         els.product.style.transform = 'none';
-        els.product.setAttribute('aria-label', `${products[active].name}, front preview. Full 360-degree product sheet available.`);
+        els.product.setAttribute('aria-label', `${products[active].name}, front preview. Drag to rotate.`);
       } else {
         const matrix = new THREE.Matrix4().makeRotationFromQuaternion(orientation);
         els.product.style.transform = `perspective(900px) matrix3d(${matrix.elements.join(',')})`;
@@ -606,34 +552,19 @@
     els.equip.addEventListener('click', addToCart);
     els.cartButton.addEventListener('click', () => toggleCart(true));
     els.closeCart.addEventListener('click', () => toggleCart(false));
-    els.sheetButton.addEventListener('click', () => {
-      const product = products[active];
-      if (!product.sheet) return;
-      els.sheetImage.src = product.sheet;
-      els.sheetImage.alt = `${product.name} product reference`;
-      els.sheetTitle.textContent = `${product.name} reference`;
-      els.sheetDialog.showModal();
-    });
-    els.closeSheet.addEventListener('click', () => els.sheetDialog.close());
-    els.sheetDialog.addEventListener('click', e => { if (e.target === els.sheetDialog) els.sheetDialog.close(); });
+
     els.soundToggle.addEventListener('click', () => {
       selectionSoundEnabled = !selectionSoundEnabled;
       els.soundToggle.setAttribute('aria-pressed', String(selectionSoundEnabled));
       els.soundToggle.lastChild.textContent = ` Selection sound: ${selectionSoundEnabled ? 'on' : 'off'}`;
       playSelectionSound();
     });
-    els.detailButton.addEventListener('click', () => openDetailMode('fabric'));
     els.detailHotspots.addEventListener('pointerdown', event => event.stopPropagation());
     els.detailHotspots.addEventListener('click', event => {
       const button = event.target.closest('[data-view]');
       if (button) moveProductToView(button.dataset.view);
     });
-    els.detailTabs.addEventListener('click', event => {
-      const button = event.target.closest('[data-detail]');
-      if (button) renderDetailMode(button.dataset.detail);
-    });
-    els.closeDetail.addEventListener('click', () => els.detailDialog.close());
-    els.detailDialog.addEventListener('click', event => { if (event.target === els.detailDialog) els.detailDialog.close(); });
+
     els.mobileDockAction.addEventListener('click', addToCart);
 
     Object.entries(readyEvents).forEach(([model, eventName]) => {

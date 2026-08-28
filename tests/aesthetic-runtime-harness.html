@@ -21,13 +21,6 @@ frame.addEventListener('load', async () => {
     action: doc.querySelector('#equip')?.textContent,
     unavailable: doc.querySelector('#purchasePanel')?.classList.contains('is-unavailable')
   };
-  doc.querySelector('#productDetailButton')?.click();
-  await wait(100);
-  const detail = {
-    open: doc.querySelector('#productDetailDialog')?.open,
-    title: doc.querySelector('#productDetailTitle')?.textContent,
-    activeView: doc.querySelector('#detailView')?.dataset.activeDetail
-  };
-  document.querySelector('#result').textContent = JSON.stringify({ initial, comingSoon, detail });
+  document.querySelector('#result').textContent = JSON.stringify({ initial, comingSoon });
 });
 </script>

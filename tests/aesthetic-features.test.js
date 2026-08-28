@@ -43,15 +43,10 @@ test('mobile purchase dock mirrors the active product and CTA', () => {
   assert.match(css, /\.mobile-purchase-dock\.is-visible/);
 });
 
-test('detail mode offers hotspots and fabric, print, and construction views', () => {
-  assert.match(html, /id="productDetailDialog"/);
-  assert.match(html, /data-detail="fabric"/);
-  assert.match(html, /data-detail="print"/);
-  assert.match(html, /data-detail="construction"/);
-  assert.match(js, /openDetailMode/);
-  assert.match(js, /renderDetailMode/);
-  assert.match(css, /\.detail-hotspots/);
-  assert.match(css, /\.detail-view/);
+test('product inspection panels are removed from the viewer', () => {
+  assert.doesNotMatch(html, /productDetailButton|productSheetButton|productDetailDialog|productSheetDialog/);
+  assert.doesNotMatch(js, /openDetailMode|renderDetailMode|productDetail|productSheet/);
+  assert.doesNotMatch(css, /\.product-detail-button|\.product-sheet-button|\.product-detail-dialog|\.product-sheet-dialog/);
 });
 
 test('coming-soon products use a non-purchase state', () => {

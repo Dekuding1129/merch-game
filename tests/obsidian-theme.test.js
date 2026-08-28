@@ -29,8 +29,6 @@ test('inspection bay includes restrained gold coordinate detail', () => {
 
 test('forms, dialogs, and mobile dock remain readable', () => {
   assert.match(css, /\.info select\s*\{[^}]*color:\s*#f0eee8/s);
-  assert.match(css, /\.product-detail-button\s*\{[^}]*background:\s*var\(--showroom-ivory\)/s);
-  assert.match(css, /\.product-detail-dialog\s*\{[^}]*background:\s*#0d1015/s);
-  assert.match(css, /\.detail-copy\s*\{[^}]*background:\s*var\(--showroom-ivory\)/s);
+
   assert.match(css, /\.mobile-purchase-dock\s*\{[^}]*background:\s*rgb\(12 15 20 \/ \.96\)/s);
 });

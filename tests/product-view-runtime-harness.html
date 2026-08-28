@@ -28,7 +28,6 @@
           view: doc.querySelector('#viewer')?.dataset.view,
           pressed: [...doc.querySelectorAll('[data-view]')].filter(button => button.getAttribute('aria-pressed') === 'true').map(button => button.dataset.view),
           viewerPointerDowns,
-          dialogOpen: doc.querySelector('#productDetailDialog')?.open,
           productLabel: doc.querySelector('#product')?.getAttribute('aria-label')
         });
       }, 800);

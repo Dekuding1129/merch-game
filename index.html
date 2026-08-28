@@ -67,8 +67,7 @@
           <p id="description">Heavyweight cotton with a boxy fit. Built for late nights, loud rooms, and respawning tomorrow.</p>
           <div class="price"><strong id="price">$42</strong><span class="stock" id="stock">In stock</span></div>
           <dl class="specs" id="specs"></dl>
-          <button class="product-detail-button" id="productDetailButton" type="button">Inspect product details</button>
-          <button class="product-sheet-button" id="productSheetButton" type="button" hidden>View full 360° product sheet</button>
+
         </div>
         <div class="purchase" id="purchasePanel">
           <div class="field">
@@ -98,37 +97,6 @@
     <div class="cart-items" id="cartItems"><p class="cart-empty">Inventory empty.<br>Pick your gear and enter the next level.</p></div>
   </aside>
 
-  <dialog class="product-sheet-dialog" id="productSheetDialog" aria-labelledby="productSheetTitle">
-    <div class="product-sheet-dialog__bar">
-      <div><span class="eyebrow">Product archive</span><h3 id="productSheetTitle">Mizrach Pinaz T-Shirt 360°</h3></div>
-      <button class="close-sheet" id="closeProductSheet" type="button" aria-label="Close product sheet">×</button>
-    </div>
-    <img id="productSheetImage" src="" alt="Mizrach Pinaz T-shirt rotation views and product details">
-  </dialog>
-
-  <dialog class="product-detail-dialog" id="productDetailDialog" aria-labelledby="productDetailTitle">
-    <div class="detail-dialog__bar">
-      <div><span class="eyebrow">Material inspection</span><h3 id="productDetailTitle">Product details</h3></div>
-      <button class="close-detail" id="closeProductDetail" type="button" aria-label="Close product details">×</button>
-    </div>
-    <div class="detail-dialog__body">
-      <div class="detail-view" id="detailView" data-active-detail="fabric">
-        <div class="detail-view__fabric" aria-hidden="true"></div>
-        <img class="detail-view__print" id="detailPrintImage" src="images/tshirt/logo-sharp.png" alt="Mizrach artwork print detail">
-        <div class="detail-view__construction" aria-hidden="true"><i></i><i></i><i></i></div>
-        <span class="detail-view__label" id="detailViewLabel">Fabric / 01</span>
-      </div>
-      <div class="detail-copy">
-        <nav class="detail-tabs" aria-label="Product detail views">
-          <button type="button" data-detail="fabric" class="active">01 Fabric</button>
-          <button type="button" data-detail="print">02 Print</button>
-          <button type="button" data-detail="construction">03 Construction</button>
-        </nav>
-        <div><span class="eyebrow" id="detailSpecLabel">Fabric</span><h4 id="detailHeading">Premium cotton</h4><p id="detailDescription">A dense, soft-touch surface designed to hold its shape.</p></div>
-        <dl class="detail-specs" id="detailSpecs"></dl>
-      </div>
-    </div>
-  </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"><strong>Item acquired</strong><span id="toastMessage"></span></div>
 
