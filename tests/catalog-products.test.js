@@ -67,7 +67,8 @@ test('location fields use dependent dropdowns', () => {
   assert.match(viewer, /updateDeliveryRegions\(\)/);
   assert.match(viewer, /updateDeliveryCities\(\)/);
   assert.match(viewer, /updateDeliveryPostal\(\)/);
-  assert.match(viewer, /api\/locations\/countries/);
-  assert.match(viewer, /api\/locations\/cities/);
-  assert.match(viewer, /api\/locations\/postal-codes/);
+  assert.match(viewer, /fetch\('data\/geodata\.json'\)/);
+  assert.match(viewer, /data\.regions/);
+  assert.match(viewer, /data\.cities/);
+  assert.match(viewer, /data\.postal/);
 });

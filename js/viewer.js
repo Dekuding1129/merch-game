@@ -61,6 +61,10 @@
     const cart = [];
     let deliveryDetails = null;
     const apiBase = new URLSearchParams(window.location.search).get('api') || `${window.location.protocol}//${window.location.hostname}:8787`;
+    const locationDataPromise = fetch('data/geodata.json').then(response => {
+      if (!response.ok) throw new Error('Location data unavailable');
+      return response.json();
+    });
 
     let activeFrames = [];
     let sequenceToken = 0;
@@ -555,11 +559,10 @@
 
     async function loadCountries() {
       try {
-        const response = await fetch(`${apiBase}/api/locations/countries`);
-        const result = await response.json();
-        setOptions(els.deliveryCountry, 'Choose country...', result.countries);
+        const data = await locationDataPromise;
+        setOptions(els.deliveryCountry, 'Choose country...', data.countries);
       } catch {
-        setOptions(els.deliveryCountry, 'Backend unavailable', [], true);
+        setOptions(els.deliveryCountry, 'Location data unavailable', [], true);
       }
     }
 
@@ -567,28 +570,28 @@
       setOptions(els.deliveryRegion, 'Loading regions...', [], true);
       setOptions(els.deliveryCity, 'Choose region first...', [], true);
       setOptions(els.deliveryPostal, 'Choose city first...', [], true);
-      const response = await fetch(`${apiBase}/api/locations/regions?country=${encodeURIComponent(els.deliveryCountry.value)}`);
-      const result = await response.json();
-      setOptions(els.deliveryRegion, 'Choose region / province...', result.regions, !result.regions.length);
+      const data = await locationDataPromise;
+      const regions = data.regions?.[els.deliveryCountry.value] || [];
+      setOptions(els.deliveryRegion, 'Choose region / province...', regions, !regions.length);
     }
 
     async function updateDeliveryCities() {
       setOptions(els.deliveryPostal, 'Choose city first...', [], true);
       els.deliveryCity.value = '';
       els.deliveryCity.disabled = true;
-      const response = await fetch(`${apiBase}/api/locations/cities?country=${encodeURIComponent(els.deliveryCountry.value)}&region=${encodeURIComponent(els.deliveryRegion.value)}`);
-      const result = await response.json();
-      els.deliveryCityOptions.innerHTML = result.cities.map(city => `<option value="${city.name}"></option>`).join('');
-      els.deliveryCity.placeholder = result.cities.length ? 'Search city...' : 'No cities found';
-      els.deliveryCity.disabled = !result.cities.length;
+      const data = await locationDataPromise;
+      const cities = data.cities?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}`] || [];
+      els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
+      els.deliveryCity.placeholder = cities.length ? 'Search city...' : 'No cities found';
+      els.deliveryCity.disabled = !cities.length;
     }
 
     async function updateDeliveryPostal() {
       const city = els.deliveryCity.value.trim();
       if (!city) { setOptions(els.deliveryPostal, 'Choose city first...', [], true); return; }
-      const response = await fetch(`${apiBase}/api/locations/postal-codes?country=${encodeURIComponent(els.deliveryCountry.value)}&region=${encodeURIComponent(els.deliveryRegion.value)}&city=${encodeURIComponent(city)}`);
-      const result = await response.json();
-      setOptions(els.deliveryPostal, result.postalCodes.length ? 'Choose postal code...' : 'No postal code found', result.postalCodes, !result.postalCodes.length);
+      const data = await locationDataPromise;
+      const postalCodes = data.postal?.[`${els.deliveryCountry.value}.${els.deliveryRegion.value}.${city.toLocaleLowerCase()}`] || [];
+      setOptions(els.deliveryPostal, postalCodes.length ? 'Choose postal code...' : 'No postal code found', postalCodes, !postalCodes.length);
     }
 
     async function saveDeliveryDetails(event) {
