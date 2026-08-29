@@ -52,7 +52,7 @@ def main():
     for row in csv.reader(admin2_path.read_text(encoding='utf-8').splitlines(), delimiter='\t'):
         if len(row) >= 2 and row[0].count('.') >= 2:
             cc, admin1, admin2 = row[0].split('.', 2)
-            if cc == 'PH': provinces.setdefault(cc, []).append({'code': f'{admin1}.{admin2}', 'name': row[1]})
+            if cc == 'PH': provinces.setdefault(cc, []).append({'code': f'{admin1}.{admin2}', 'name': row[1].removeprefix('Province of ')})
 
     cities = {}
     with lines_from_zip(cities_path) as handle:
