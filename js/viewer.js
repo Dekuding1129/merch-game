@@ -657,7 +657,13 @@
       submit.textContent = 'Checking…';
       let response;
       try {
-        response = await fetch(`${apiBase}/api/checkout/quote`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ sku, quantity: 1, option: els.size.value }], delivery }) });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 8000);
+        try {
+          response = await fetch(`${apiBase}/api/checkout/quote`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ sku, quantity: 1, option: els.size.value }], delivery }), signal: controller.signal });
+        } finally {
+          clearTimeout(timeout);
+        }
       } catch {
         submit.disabled = false;
         submit.textContent = 'Continue — BUY';
@@ -681,7 +687,7 @@
       renderCart();
       closeDeliveryForm();
       els.toast.querySelector('strong').textContent = 'Details captured';
-      els.toastMessage.textContent = `${p.name} added. Demo reference: ${result.checkout.id}. No payment taken.`;
+      els.toastMessage.textContent = `${p.name} added. Demo reference: ${result.checkout.id}. No payment taken.${result.checkout.emailSent ? ' Confirmation email is in the local Mailpit inbox.' : ' No email sent.'}`;
       els.toast.classList.add('show');
       clearTimeout(addToCart.toastTimer);
       addToCart.toastTimer = setTimeout(() => els.toast.classList.remove('show'), 3200);

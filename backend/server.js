@@ -1,5 +1,6 @@
 const http = require('node:http');
 const crypto = require('node:crypto');
+const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -62,6 +63,32 @@ function validateOrder(input) {
   return { items, delivery, subtotal, currency: 'USD' };
 }
 
+function sendConfirmationEmail(order) {
+  if (process.env.EMAIL_ENABLED !== '1') return Promise.resolve(false);
+  const host = process.env.SMTP_HOST || '127.0.0.1';
+  const port = Number(process.env.SMTP_PORT || 1025);
+  const delivery = order.delivery;
+  const itemLines = order.items.map(item => `${item.quantity} x ${item.name} (${item.option}) — $${item.unitPrice * item.quantity}`).join('\n');
+  const body = `Thank you for your order.\n\nOrder reference: ${order.id}\n\n${itemLines}\n\nSubtotal: $${order.subtotal} ${order.currency}\n\nDelivery to:\n${delivery.name}\n${delivery.address}\n${delivery.barangay}, ${delivery.city}, ${delivery.region}\n${delivery.postal}, ${delivery.country}\n\nThis is a demo confirmation. No payment was taken.`;
+  const message = `From: LOOT Demo <no-reply@loot.local>\r\nTo: ${delivery.email}\r\nSubject: LOOT demo order ${order.id}\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n${body.replace(/^\./gm, '..')}\r\n.`;
+  return new Promise(resolve => {
+    const socket = net.createConnection({ host, port });
+    let step = 0;
+    const commands = [`EHLO loot.local`, `MAIL FROM:<no-reply@loot.local>`, `RCPT TO:<${delivery.email}>`, 'DATA', message, 'QUIT'];
+    const finish = value => { socket.destroy(); resolve(value); };
+    socket.setTimeout(5000, () => finish(false));
+    socket.on('error', () => finish(false));
+    socket.on('data', chunk => {
+      if (step >= commands.length) return;
+      const response = chunk.toString();
+      if (!/^(?:220|235|250|354|221)/m.test(response)) return finish(false);
+      const command = commands[step++];
+      socket.write(`${command}\r\n`);
+      if (step === commands.length) finish(true);
+    });
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return send(res, 204, {});
   if (req.method === 'GET' && req.url === '/api/health') return send(res, 200, { ok: true, mode: 'demo', persistence: 'memory-only', payments: 'disabled' });
@@ -93,7 +120,8 @@ const server = http.createServer(async (req, res) => {
       const id = `DEMO-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
       const order = { id, status: 'demo_pending', createdAt: new Date().toISOString(), ...validated };
       orders.set(id, order);
-      return send(res, 201, { ok: true, checkout: { id, status: order.status, subtotal: order.subtotal, currency: order.currency, items: order.items } });
+      const emailSent = await sendConfirmationEmail(order);
+      return send(res, 201, { ok: true, checkout: { id, status: order.status, subtotal: order.subtotal, currency: order.currency, items: order.items, emailSent } });
     } catch (error) {
       return send(res, 400, { ok: false, error: error.message });
     }
