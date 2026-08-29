@@ -76,6 +76,7 @@ test('location fields use dependent dropdowns', () => {
   assert.match(viewer, /sort\(\(a, b\) => a\.localeCompare\(b\)\)/);
   assert.match(viewer, /data\.postal/);
   assert.match(viewer, /data\.barangays/);
+  assert.match(viewer, /els\.deliveryBarangay\.addEventListener\('focus', renderBarangaySuggestions\)/);
 });
 
 test('city and postal fields remain writable with dropdown suggestions', () => {

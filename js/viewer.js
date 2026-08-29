@@ -745,6 +745,7 @@
       updateDeliveryPostal();
     });
     els.deliveryBarangay.addEventListener('input', renderBarangaySuggestions);
+    els.deliveryBarangay.addEventListener('focus', renderBarangaySuggestions);
     els.deliveryBarangaySuggestions.addEventListener('pointerdown', event => {
       const button = event.target.closest('[data-barangay]');
       if (!button) return;
