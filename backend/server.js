@@ -54,7 +54,7 @@ function validateOrder(input) {
     subtotal += product.price * quantity;
   }
   const delivery = input.delivery || {};
-  const required = ['name', 'email', 'phone', 'address', 'region', 'city', 'postal', 'country'];
+  const required = ['name', 'email', 'phone', 'address', 'barangay', 'region', 'city', 'postal', 'country'];
   for (const field of required) {
     if (typeof delivery[field] !== 'string' || delivery[field].trim().length < 2) return `delivery.${field} is required`;
   }

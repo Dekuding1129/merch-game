@@ -32,7 +32,7 @@ test('available purchase controls are labeled BUY', () => {
 test('BUY opens a required delivery-details form without local persistence', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(index, /id="deliveryForm"/);
-  for (const field of ['name', 'email', 'phone', 'address', 'city', 'postal']) {
+  for (const field of ['name', 'email', 'phone', 'address', 'barangay', 'city', 'postal']) {
     assert.match(index, new RegExp(`name="${field}"[^>]*required`));
   }
   assert.match(index, /type="hidden" id="deliveryCountry" name="country" value="Philippines"/);
@@ -88,6 +88,7 @@ test('location controls do not show instructional placeholder text', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert.match(index, /id="deliveryCity"[^>]*placeholder=""/);
   assert.match(index, /id="deliveryPostal"[^>]*placeholder=""/);
+  assert.match(index, /id="deliveryBarangay"[^>]*name="barangay"/);
   assert.doesNotMatch(index, /id="deliveryCountryOptions"/);
 });
 
@@ -101,4 +102,5 @@ test('city and postal inputs stay writable before dependent suggestions load', (
 test('location lookup defaults to Philippines', () => {
   assert.match(viewer, /function countryCode\(\)\s*\{\s*return 'PH'/);
   assert.match(viewer, /function regionCode\(\)/);
+  assert.match(viewer, /els\.deliveryPostal\.value = postalCodes\[0\]/);
 });
