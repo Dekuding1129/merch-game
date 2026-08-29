@@ -75,6 +75,7 @@ test('location fields use dependent dropdowns', () => {
   assert.match(viewer, /data\.cities/);
   assert.match(viewer, /sort\(\(a, b\) => a\.localeCompare\(b\)\)/);
   assert.match(viewer, /data\.postal/);
+  assert.match(viewer, /data\.barangays/);
 });
 
 test('city and postal fields remain writable with dropdown suggestions', () => {
@@ -89,6 +90,7 @@ test('location controls do not show instructional placeholder text', () => {
   assert.match(index, /id="deliveryCity"[^>]*placeholder=""/);
   assert.match(index, /id="deliveryPostal"[^>]*placeholder=""/);
   assert.match(index, /id="deliveryBarangay"[^>]*name="barangay"/);
+  assert.match(index, /id="deliveryBarangaySuggestions"/);
   assert.doesNotMatch(index, /id="deliveryCountryOptions"/);
 });
 

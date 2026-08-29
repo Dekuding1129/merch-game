@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryRegionSuggestions: document.querySelector('#deliveryRegionSuggestions'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryBarangay: document.querySelector('#deliveryBarangay'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryRegionSuggestions: document.querySelector('#deliveryRegionSuggestions'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryBarangay: document.querySelector('#deliveryBarangay'), deliveryBarangaySuggestions: document.querySelector('#deliveryBarangaySuggestions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
     };
 
     let active = 0;
@@ -579,6 +579,14 @@
       els.deliveryRegionSuggestions.hidden = !matches.length;
     }
 
+    function renderBarangaySuggestions() {
+      const query = els.deliveryBarangay.value.trim().toLocaleLowerCase();
+      const values = els.deliveryBarangay._barangayValues || [];
+      const matches = values.filter(name => name.toLocaleLowerCase().includes(query)).slice(0, 80);
+      els.deliveryBarangaySuggestions.innerHTML = matches.map(name => `<button class="location-suggestion" type="button" data-barangay="${name}">${name}</button>`).join('');
+      els.deliveryBarangaySuggestions.hidden = !matches.length;
+    }
+
     function countryCode() {
       return 'PH';
     }
@@ -615,6 +623,9 @@
       const cities = data.cities?.[`${countryCode()}.${regionCode()}`] || [];
       els.deliveryCity._cityValues = cities.map(city => city.name).sort((a, b) => a.localeCompare(b));
       renderCitySuggestions();
+      els.deliveryBarangay.value = '';
+      els.deliveryBarangay._barangayValues = data.barangays?.[els.deliveryCity.value.toLocaleLowerCase()] || [];
+      renderBarangaySuggestions();
       els.deliveryCity.placeholder = cities.length ? '' : '';
       els.deliveryCity.disabled = false;
     }
@@ -627,6 +638,9 @@
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
       const postalCodes = data.postal?.[`${countryCode()}.${regionCode()}.${city.toLocaleLowerCase()}`] || [];
+      els.deliveryBarangay._barangayValues = data.barangays?.[city.toLocaleLowerCase()] || [];
+      els.deliveryBarangay.value = '';
+      renderBarangaySuggestions();
       setSuggestions(els.deliveryPostalOptions, postalCodes);
       els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = false;
@@ -729,6 +743,15 @@
       els.deliveryCity.value = button.dataset.city;
       els.deliveryCitySuggestions.hidden = true;
       updateDeliveryPostal();
+    });
+    els.deliveryBarangay.addEventListener('input', renderBarangaySuggestions);
+    els.deliveryBarangaySuggestions.addEventListener('pointerdown', event => {
+      const button = event.target.closest('[data-barangay]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      els.deliveryBarangay.value = button.dataset.barangay;
+      els.deliveryBarangaySuggestions.hidden = true;
     });
 
 

@@ -16,6 +16,8 @@ SOURCES = {
     'admin2Codes.txt': 'https://download.geonames.org/export/dump/admin2Codes.txt',
     'cities500.zip': 'https://download.geonames.org/export/dump/cities500.zip',
     'postal.zip': 'https://download.geonames.org/export/zip/allCountries.zip',
+    'barangays.json': 'https://raw.githubusercontent.com/aivangogh/ph-address/main/src/data/barangays.json',
+    'municipalities.json': 'https://raw.githubusercontent.com/aivangogh/ph-address/main/src/data/municipalities.json',
 }
 
 def download(name, url):
@@ -36,6 +38,8 @@ def main():
     admin2_path = download('admin2Codes.txt', SOURCES['admin2Codes.txt'])
     cities_path = download('cities500.zip', SOURCES['cities500.zip'])
     postal_path = download('postal.zip', SOURCES['postal.zip'])
+    barangay_path = download('barangays.json', SOURCES['barangays.json'])
+    municipality_path = download('municipalities.json', SOURCES['municipalities.json'])
 
     countries = {}
     for row in csv.reader(country_path.read_text(encoding='utf-8').splitlines(), delimiter='\t'):
@@ -72,8 +76,15 @@ def main():
                 key = f'{cc}.{admin1}.{place.casefold()}'
                 postal.setdefault(key, []).append(code)
 
+    municipalities = json.loads(municipality_path.read_text(encoding='utf-8'))
+    barangays_by_city = {}
+    city_names = {item['psgcCode']: item['name'] for item in municipalities}
+    for item in json.loads(barangay_path.read_text(encoding='utf-8')):
+        city = city_names.get(item['municipalCityCode'])
+        if city: barangays_by_city.setdefault(city.casefold(), set()).add(item['name'])
+
     target = 'PH'
-    output = {'countries': [{'code': target, 'name': countries[target]}], 'regions': {}, 'provinces': {target: provinces.get(target, [])}, 'cities': {}, 'postal': {}}
+    output = {'countries': [{'code': target, 'name': countries[target]}], 'regions': {}, 'provinces': {target: provinces.get(target, [])}, 'cities': {}, 'postal': {}, 'barangays': {key: sorted(values, key=str.casefold) for key, values in barangays_by_city.items()}}
     for key, name in regions.items():
         if not key.startswith(f'{target}.'): continue
         output['regions'].setdefault(key.split('.')[0], []).append({'code': key.split('.', 1)[1], 'name': name})
