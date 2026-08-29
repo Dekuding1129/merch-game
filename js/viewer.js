@@ -698,7 +698,7 @@
 
     els.deliveryRegion.addEventListener('change', updateDeliveryCities);
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
-    els.deliveryCity.addEventListener('input', () => { renderCitySuggestions(); updateDeliveryPostal(); });
+    els.deliveryCity.addEventListener('input', renderCitySuggestions);
     els.deliveryCitySuggestions.addEventListener('pointerdown', event => {
       const button = event.target.closest('[data-city]');
       if (!button) return;
