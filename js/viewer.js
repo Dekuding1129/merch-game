@@ -457,7 +457,7 @@
 
         els.optionLabel.textContent = available ? p.optionLabel : 'Release status';
         els.size.innerHTML = available
-          ? `<option value="">Choose option...</option>${p.options.map(option => `<option>${option}</option>`).join('')}`
+          ? `<option value="" selected></option>${p.options.map(option => `<option>${option}</option>`).join('')}`
           : '<option value="">Not available yet</option>';
         els.size.value = '';
         els.size.disabled = !available;
