@@ -11,10 +11,10 @@ let geodata = null;
 try { geodata = JSON.parse(fs.readFileSync(geodataPath, 'utf8')); } catch { /* Run backend/setup-geodata.py first for worldwide data. */ }
 
 const products = {
-  'mizrach-pinaz-t-shirt': { name: 'Mizrach Pinaz T-Shirt', price: 42, options: ['XS', 'S', 'M', 'L', 'XL', '2XL'] },
-  'mizrach-pinaz-tumbler': { name: 'Mizrach Pinaz Tumbler', price: 28, options: ['One size'] },
-  'mizrach-pinaz-hoodie': { name: 'Mizrach Pinaz Hoodie', price: 68, options: ['XS', 'S', 'M', 'L', 'XL', '2XL'] },
-  'mizrach-pinaz-keychain': { name: 'Mizrach Pinaz Keychain', price: 18, options: ['One size'] }
+  'mizrach-pinaz-t-shirt': { name: 'Mizrach Pinaz T-Shirt', price: 2617, options: ['XS', 'S', 'M', 'L', 'XL', '2XL'] },
+  'mizrach-pinaz-tumbler': { name: 'Mizrach Pinaz Tumbler', price: 1745, options: ['One size'] },
+  'mizrach-pinaz-hoodie': { name: 'Mizrach Pinaz Hoodie', price: 4237, options: ['XS', 'S', 'M', 'L', 'XL', '2XL'] },
+  'mizrach-pinaz-keychain': { name: 'Mizrach Pinaz Keychain', price: 1121, options: ['One size'] }
 };
 
 function send(res, status, body) {
@@ -60,7 +60,7 @@ function validateOrder(input) {
     if (typeof delivery[field] !== 'string' || delivery[field].trim().length < 2) return `delivery.${field} is required`;
   }
   if (!/^\S+@\S+\.\S+$/.test(delivery.email.trim())) return 'delivery.email is invalid';
-  return { items, delivery, subtotal, currency: 'USD' };
+  return { items, delivery, subtotal, currency: 'PHP' };
 }
 
 function sendConfirmationEmail(order) {
@@ -68,8 +68,8 @@ function sendConfirmationEmail(order) {
   const host = process.env.SMTP_HOST || '127.0.0.1';
   const port = Number(process.env.SMTP_PORT || 1025);
   const delivery = order.delivery;
-  const itemLines = order.items.map(item => `${item.quantity} x ${item.name} (${item.option}) — $${item.unitPrice * item.quantity}`).join('\n');
-  const body = `Thank you for your order.\n\nOrder reference: ${order.id}\n\n${itemLines}\n\nSubtotal: $${order.subtotal} ${order.currency}\n\nDelivery to:\n${delivery.name}\n${delivery.address}\n${delivery.barangay}, ${delivery.city}, ${delivery.region}\n${delivery.postal}, ${delivery.country}\n\nThis is a demo confirmation. No payment was taken.`;
+  const itemLines = order.items.map(item => `${item.quantity} x ${item.name} (${item.option}) — ₱${(item.unitPrice * item.quantity).toLocaleString('en-PH')}`).join('\n');
+  const body = `Thank you for your order.\n\nOrder reference: ${order.id}\n\n${itemLines}\n\nSubtotal: ₱${order.subtotal.toLocaleString('en-PH')} ${order.currency}\n\nDelivery to:\n${delivery.name}\n${delivery.address}\n${delivery.barangay}, ${delivery.city}, ${delivery.region}\n${delivery.postal}, ${delivery.country}\n\nThis is a demo confirmation. No payment was taken.`;
   const message = `From: LOOT Demo <no-reply@loot.local>\r\nTo: ${delivery.email}\r\nSubject: LOOT demo order ${order.id}\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n${body.replace(/^\./gm, '..')}\r\n.`;
   return new Promise(resolve => {
     const socket = net.createConnection({ host, port });

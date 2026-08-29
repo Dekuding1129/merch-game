@@ -1,7 +1,7 @@
 // Signature products use continuous local WebGL models; remaining products retain lightweight SVG placeholders.
     const products = [
       {
-        name: 'Mizrach Pinaz T-Shirt', rarity: 'Signature', price: 42, stock: 'In stock', color: '#111111', print: '#d9a514', kind: 'tee',
+        name: 'Mizrach Pinaz T-Shirt', rarity: 'Signature', price: 2617, stock: 'In stock', color: '#111111', print: '#d9a514', kind: 'tee',
         model3d: 'shirt',
         optionLabel: 'Select size', options: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
         fallbackImage: 'images/tshirt/preview.png',
@@ -10,7 +10,7 @@
         specs: [['Fabric', 'Premium cotton'], ['Print', 'High quality'], ['Finish', 'Durable stitching']]
       },
       {
-        name: 'Mizrach Pinaz Tumbler', rarity: 'Signature', price: 28, stock: 'In stock', color: '#08090c', print: '#d9a514', kind: 'tumbler',
+        name: 'Mizrach Pinaz Tumbler', rarity: 'Signature', price: 1745, stock: 'In stock', color: '#08090c', print: '#d9a514', kind: 'tumbler',
         model3d: 'cup',
         optionLabel: 'Select option', options: ['One size'],
         fallbackImage: 'images/tumbler/preview.png',
@@ -19,14 +19,14 @@
         specs: [['Finish', 'Matte black'], ['Lid', 'Low profile'], ['Print', 'Front graphic']]
       },
       {
-        name: 'Mizrach Pinaz Hoodie', rarity: 'Signature', price: 68, stock: 'In stock', color: '#080a0d', print: '#d9a514', kind: 'hoodie',
+        name: 'Mizrach Pinaz Hoodie', rarity: 'Signature', price: 4237, stock: 'In stock', color: '#080a0d', print: '#d9a514', kind: 'hoodie',
         model3d: 'hoodie',
         optionLabel: 'Select size', options: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
         description: 'Black pullover hoodie with a dimensional hood, kangaroo pocket, drawstrings, and front-only Mizrach Pinaz artwork.',
         specs: [['Finish', 'Black fleece'], ['Construction', 'Pullover hood'], ['Print', 'Front graphic']]
       },
       {
-        name: 'Mizrach Pinaz Keychain', rarity: 'Signature', price: 18, stock: 'In stock', color: '#050607', print: '#d9a514', kind: 'keychain',
+        name: 'Mizrach Pinaz Keychain', rarity: 'Signature', price: 1121, stock: 'In stock', color: '#050607', print: '#d9a514', kind: 'keychain',
         model3d: 'keychain',
         optionLabel: 'Select option', options: ['One size'],
 
@@ -410,7 +410,7 @@
     function updateMobileDock(p = products[active]) {
       const available = p.price != null;
       els.mobileDockName.textContent = p.name;
-      els.mobileDockPrice.textContent = available ? `$${p.price}` : 'Coming soon';
+      els.mobileDockPrice.textContent = available ? `₱${p.price.toLocaleString('en-PH')}` : 'Coming soon';
       els.mobileDockAction.textContent = available ? 'BUY' : 'Notify me';
       els.mobileDock.classList.toggle('is-unavailable', !available);
     }
@@ -451,7 +451,7 @@
         els.rarity.textContent = `${p.rarity} / 0${active + 1}`;
         els.name.textContent = p.name;
         els.description.textContent = p.description;
-        els.price.textContent = p.price == null ? 'TBD' : `$${p.price}`;
+        els.price.textContent = p.price == null ? 'TBD' : `₱${p.price.toLocaleString('en-PH')}`;
         els.stock.textContent = p.stock;
         els.specs.innerHTML = p.specs.map(([key, value]) => `<div class="spec"><dt>${key}</dt><dd>${value}</dd></div>`).join('');
 
@@ -694,7 +694,7 @@
     }
 
     function renderCart() {
-      els.cartItems.innerHTML = cart.length ? cart.map((item, i) => `<div class="cart-item"><div><strong>${item.name}</strong><br><span>${item.option} · Item 0${i + 1}</span></div><strong>${item.price == null ? 'TBD' : `$${item.price}`}</strong></div>`).join('') : '<p class="cart-empty">Inventory empty.<br>Pick your gear and enter the next level.</p>';
+      els.cartItems.innerHTML = cart.length ? cart.map((item, i) => `<div class="cart-item"><div><strong>${item.name}</strong><br><span>${item.option} · Item 0${i + 1}</span></div><strong>${item.price == null ? 'TBD' : `₱${item.price.toLocaleString('en-PH')}`}</strong></div>`).join('') : '<p class="cart-empty">Inventory empty.<br>Pick your gear and enter the next level.</p>';
     }
 
     function toggleCart(open) {

@@ -14,10 +14,10 @@ test('catalog contains only the four Mizrach Pinaz products', () => {
 
 test('every catalog product has an explicit price', () => {
   for (const [name, price] of [
-    ['Mizrach Pinaz T-Shirt', 42],
-    ['Mizrach Pinaz Tumbler', 28],
-    ['Mizrach Pinaz Hoodie', 68],
-    ['Mizrach Pinaz Keychain', 18]
+    ['Mizrach Pinaz T-Shirt', 2617],
+    ['Mizrach Pinaz Tumbler', 1745],
+    ['Mizrach Pinaz Hoodie', 4237],
+    ['Mizrach Pinaz Keychain', 1121]
   ]) {
     assert.match(catalog, new RegExp(`name: '${name.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}'[^\\n]*price: ${price}\\b`));
   }
