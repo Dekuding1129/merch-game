@@ -43,8 +43,20 @@ test('BUY opens a required delivery-details form without local persistence', () 
 
 test('delivery submission uses the demo backend before adding inventory', () => {
   assert.match(viewer, /fetch\(`\$\{apiBase\}\/api\/checkout\/quote`/);
-  assert.match(viewer, /payments disabled|No payment taken/i);
+  assert.match(viewer, /confirmDemoOrder\(\)/);
   assert.match(viewer, /if \(!response\.ok\)/);
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /No payment will be taken/i);
+});
+
+test('checkout has a frontend order-review step and confirmation state', () => {
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  assert.match(index, /id="orderReview"/);
+  assert.match(index, /id="confirmOrder"/);
+  assert.match(index, /id="orderConfirmation"/);
+  assert.match(viewer, /showOrderReview\(deliveryDetails\)/);
+  assert.match(viewer, /showOrderReview\(delivery\)/);
+  assert.match(viewer, /showOrderConfirmation\(/);
 });
 
 test('keyboard product shortcuts do not interfere with text entry', () => {

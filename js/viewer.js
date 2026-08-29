@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryRegionSuggestions: document.querySelector('#deliveryRegionSuggestions'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryBarangay: document.querySelector('#deliveryBarangay'), deliveryBarangaySuggestions: document.querySelector('#deliveryBarangaySuggestions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), orderReview: document.querySelector('#orderReview'), orderConfirmation: document.querySelector('#orderConfirmation'), reviewProductName: document.querySelector('#reviewProductName'), reviewProductOption: document.querySelector('#reviewProductOption'), reviewProductPrice: document.querySelector('#reviewProductPrice'), reviewDetails: document.querySelector('#reviewDetails'), confirmOrder: document.querySelector('#confirmOrder'), editDelivery: document.querySelector('#editDelivery'), closeConfirmation: document.querySelector('#closeConfirmation'), confirmationMessage: document.querySelector('#confirmationMessage'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryRegionSuggestions: document.querySelector('#deliveryRegionSuggestions'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryBarangay: document.querySelector('#deliveryBarangay'), deliveryBarangaySuggestions: document.querySelector('#deliveryBarangaySuggestions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
     };
 
     let active = 0;
@@ -547,6 +547,9 @@
     function openDeliveryForm() {
       els.deliveryModal.hidden = false;
       els.deliveryModal.classList.add('open');
+      els.deliveryForm.hidden = false;
+      els.orderReview.hidden = true;
+      els.orderConfirmation.hidden = true;
       updateDeliveryRegions();
       els.deliveryForm.elements.name.focus();
     }
@@ -647,12 +650,41 @@
       if (postalCodes.length) els.deliveryPostal.value = postalCodes[0];
     }
 
+    function showOrderReview(delivery) {
+      const p = products[active];
+      els.deliveryForm.hidden = true;
+      els.orderReview.hidden = false;
+      els.orderConfirmation.hidden = true;
+      els.reviewProductName.textContent = p.name;
+      els.reviewProductOption.textContent = p.optionLabel.replace(/^Select /, '') + ': ' + els.size.value;
+      els.reviewProductPrice.textContent = `₱${p.price.toLocaleString('en-PH')}`;
+      const labels = [['Name', delivery.name], ['Email', delivery.email], ['Phone', delivery.phone], ['Address', `${delivery.address}, ${delivery.barangay}, ${delivery.city}, ${delivery.region} ${delivery.postal}`]];
+      els.reviewDetails.replaceChildren(...labels.flatMap(([label, value]) => {
+        const term = document.createElement('dt'); term.textContent = label;
+        const detail = document.createElement('dd'); detail.textContent = value;
+        return [term, detail];
+      }));
+    }
+
+    function showOrderConfirmation(message) {
+      els.orderReview.hidden = true;
+      els.orderConfirmation.hidden = false;
+      els.confirmationMessage.textContent = message;
+      els.closeConfirmation.focus();
+    }
+
     async function saveDeliveryDetails(event) {
       event.preventDefault();
-      const delivery = Object.fromEntries(new FormData(els.deliveryForm).entries());
+      if (!els.deliveryForm.reportValidity()) return;
+      deliveryDetails = Object.fromEntries(new FormData(els.deliveryForm).entries());
+      showOrderReview(deliveryDetails);
+    }
+
+    async function confirmDemoOrder() {
+      const delivery = deliveryDetails;
       const p = products[active];
       const sku = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const submit = els.deliveryForm.querySelector('[type="submit"]');
+      const submit = els.confirmOrder;
       submit.disabled = true;
       submit.textContent = 'Checking…';
       let response;
@@ -666,31 +698,25 @@
         }
       } catch {
         submit.disabled = false;
-        submit.textContent = 'Continue — BUY';
+        submit.textContent = 'Confirm demo order';
         els.toast.querySelector('strong').textContent = 'Backend unavailable';
-        els.toastMessage.textContent = 'Start the local backend, then try BUY again.';
+        els.toastMessage.textContent = 'Review saved. Start the local backend to finish the demo order.';
         els.toast.classList.add('show');
         return;
       }
       const result = await response.json();
       if (!response.ok) {
         submit.disabled = false;
-        submit.textContent = 'Continue — BUY';
+        submit.textContent = 'Confirm demo order';
         els.toast.querySelector('strong').textContent = 'Could not continue';
         els.toastMessage.textContent = result.error || 'Check the delivery details and try again.';
         els.toast.classList.add('show');
         return;
       }
-      deliveryDetails = delivery;
       cart.push({ ...p, option: els.size.value });
       els.cartCount.textContent = cart.length;
       renderCart();
-      closeDeliveryForm();
-      els.toast.querySelector('strong').textContent = 'Details captured';
-      els.toastMessage.textContent = `${p.name} added. Demo reference: ${result.checkout.id}. No payment taken.${result.checkout.emailSent ? ' Confirmation email is in the local Mailpit inbox.' : ' No email sent.'}`;
-      els.toast.classList.add('show');
-      clearTimeout(addToCart.toastTimer);
-      addToCart.toastTimer = setTimeout(() => els.toast.classList.remove('show'), 3200);
+      showOrderConfirmation(`${p.name} is ready. Demo reference: ${result.checkout.id}. No payment was taken.${result.checkout.emailSent ? ' The confirmation email is in the local Mailpit inbox.' : ''}`);
     }
 
     function renderCart() {
@@ -723,6 +749,9 @@
 
     els.mobileDockAction.addEventListener('click', addToCart);
     els.deliveryForm.addEventListener('submit', saveDeliveryDetails);
+    els.confirmOrder.addEventListener('click', confirmDemoOrder);
+    els.editDelivery.addEventListener('click', () => { els.orderReview.hidden = true; els.deliveryForm.hidden = false; els.deliveryForm.elements.name.focus(); });
+    els.closeConfirmation.addEventListener('click', closeDeliveryForm);
     els.closeDelivery.addEventListener('click', closeDeliveryForm);
     els.cancelDelivery.addEventListener('click', closeDeliveryForm);
     els.deliveryModal.addEventListener('click', event => { if (event.target === els.deliveryModal) closeDeliveryForm(); });

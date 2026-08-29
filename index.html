@@ -113,8 +113,22 @@
           <div class="field"><label for="deliveryEmail">Email</label><input id="deliveryEmail" name="email" type="email" autocomplete="email" required></div>
           <div class="field"><label for="deliveryPhone">Phone</label><input id="deliveryPhone" name="phone" type="tel" autocomplete="tel" required></div>
         </div>
-        <div class="delivery-actions"><button class="delivery-cancel" id="cancelDelivery" type="button">Cancel</button><button class="equip" type="submit">Continue — BUY</button></div>
+        <div class="delivery-actions"><button class="delivery-cancel" id="cancelDelivery" type="button">Cancel</button><button class="equip" type="submit">Review order</button></div>
       </form>
+      <section id="orderReview" class="order-review" hidden aria-labelledby="orderReviewTitle">
+        <div class="eyebrow">Order review</div>
+        <h4 id="orderReviewTitle">Check your details</h4>
+        <div class="review-product"><div><strong id="reviewProductName"></strong><span id="reviewProductOption"></span></div><strong id="reviewProductPrice"></strong></div>
+        <dl class="review-details" id="reviewDetails"></dl>
+        <p class="review-demo-note">Demo checkout only. No payment will be taken.</p>
+        <div class="delivery-actions"><button class="delivery-cancel" id="editDelivery" type="button">Edit details</button><button class="equip" id="confirmOrder" type="button">Confirm demo order</button></div>
+      </section>
+      <section id="orderConfirmation" class="order-confirmation" hidden aria-live="polite">
+        <div class="eyebrow">Demo order ready</div>
+        <h4>Thank you.</h4>
+        <p id="confirmationMessage"></p>
+        <button class="equip" id="closeConfirmation" type="button">Done</button>
+      </section>
     </section>
   </div>
 

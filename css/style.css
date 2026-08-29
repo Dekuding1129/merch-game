@@ -293,6 +293,16 @@
     .delivery-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-top: 24px; }
     .delivery-cancel { min-height: 58px; padding: 0 20px; border: 1px solid var(--line); background: transparent; cursor: pointer; text-transform: uppercase; }
     .delivery-actions .equip { min-height: 58px; }
+    .order-review, .order-confirmation { padding-top: 22px; }
+    .order-review h4, .order-confirmation h4 { margin: 8px 0 18px; font-family: "Archivo Black", sans-serif; font-size: clamp(26px, 4vw, 38px); line-height: .95; text-transform: uppercase; }
+    .review-product { display: flex; justify-content: space-between; gap: 18px; padding: 16px; border: 1px solid var(--line); background: var(--panel-2); }
+    .review-product strong, .review-product span { display: block; }
+    .review-product span { margin-top: 5px; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .review-details { display: grid; grid-template-columns: 92px 1fr; gap: 10px 14px; margin: 18px 0; font-size: 11px; }
+    .review-details dt { color: var(--muted); text-transform: uppercase; }
+    .review-details dd { margin: 0; overflow-wrap: anywhere; }
+    .review-demo-note { margin: 18px 0; padding: 12px; border-left: 2px solid var(--accent); color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .order-confirmation p { color: var(--muted); font-size: 12px; line-height: 1.6; }
 
 
     @keyframes ticker { to { transform: translateX(-50%); } }
@@ -367,6 +377,13 @@
       .info { order: 3; display: flex; padding: 34px 20px; }
       .product-meta h2 { font-size: 42px; }
       .ticker { order: 4; }
+      .delivery-modal { padding: 10px; align-items: start; overflow-y: auto; }
+      .delivery-card { max-height: calc(100vh - 20px); padding: 20px; }
+      .delivery-grid { grid-template-columns: 1fr; gap: 14px; }
+      .delivery-wide { grid-column: auto; }
+      .delivery-actions { grid-template-columns: 1fr; }
+      .delivery-cancel { order: 2; }
+      .review-details { grid-template-columns: 78px 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
