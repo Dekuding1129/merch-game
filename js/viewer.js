@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryRegionSuggestions: document.querySelector('#deliveryRegionSuggestions'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
     };
 
     let active = 0;
@@ -572,16 +572,26 @@
       els.deliveryCitySuggestions.hidden = !matches.length;
     }
 
+    function renderRegionSuggestions() {
+      const query = els.deliveryRegion.value.trim().toLocaleLowerCase();
+      const matches = (els.deliveryRegion._regionValues || []).filter(item => item.name.toLocaleLowerCase().includes(query)).slice(0, 80);
+      els.deliveryRegionSuggestions.innerHTML = matches.map(item => `<button class="location-suggestion" type="button" data-code="${item.code}" data-region="${item.name}">${item.name}</button>`).join('');
+      els.deliveryRegionSuggestions.hidden = !matches.length;
+    }
+
     function countryCode() {
       return 'PH';
     }
 
     function regionCode() {
-      return els.deliveryRegion.value.split('.')[0];
+      return els.deliveryRegion.dataset.code?.split('.')[0] || '';
     }
 
     async function updateDeliveryRegions() {
-      setOptions(els.deliveryRegion, '', [], true);
+      els.deliveryRegion.value = '';
+      delete els.deliveryRegion.dataset.code;
+      els.deliveryRegion._regionValues = [];
+      els.deliveryRegionSuggestions.hidden = true;
 
       els.deliveryPostal.value = '';
       els.deliveryPostal.placeholder = '';
@@ -590,7 +600,8 @@
       const data = await getLocationData();
       const regions = data.regions?.[countryCode()] || [];
       const provinces = data.provinces?.[countryCode()] || [];
-      setOptions(els.deliveryRegion, '', [...regions, ...provinces].sort((a, b) => a.name.localeCompare(b.name)), !(regions.length || provinces.length));
+      els.deliveryRegion._regionValues = [...regions, ...provinces].sort((a, b) => a.name.localeCompare(b.name));
+      renderRegionSuggestions();
     }
 
     async function updateDeliveryCities() {
@@ -696,7 +707,17 @@
     els.deliveryModal.addEventListener('click', event => { if (event.target === els.deliveryModal) closeDeliveryForm(); });
     document.addEventListener('keydown', event => { if (event.key === 'Escape' && !els.deliveryModal.hidden) closeDeliveryForm(); });
 
-    els.deliveryRegion.addEventListener('change', updateDeliveryCities);
+    els.deliveryRegion.addEventListener('input', () => { delete els.deliveryRegion.dataset.code; renderRegionSuggestions(); });
+    els.deliveryRegionSuggestions.addEventListener('pointerdown', event => {
+      const button = event.target.closest('[data-region]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      els.deliveryRegion.value = button.dataset.region;
+      els.deliveryRegion.dataset.code = button.dataset.code;
+      els.deliveryRegionSuggestions.hidden = true;
+      updateDeliveryCities();
+    });
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
     els.deliveryCity.addEventListener('input', renderCitySuggestions);
     els.deliveryCitySuggestions.addEventListener('pointerdown', event => {

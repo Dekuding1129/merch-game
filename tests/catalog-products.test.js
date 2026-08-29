@@ -60,7 +60,8 @@ test('delivery form uses a fixed Philippines country value', () => {
 
 test('location fields use dependent dropdowns', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-  assert.match(index, /id="deliveryRegion"[^>]*disabled/);
+  assert.doesNotMatch(index, /id="deliveryRegion"[^>]*disabled/);
+  assert.match(index, /id="deliveryRegionSuggestions"/);
   assert.doesNotMatch(index, /id="deliveryCity"[^>]*disabled/);
   assert.doesNotMatch(index, /id="deliveryPostal"[^>]*disabled/);
   assert.match(index, /id="deliveryCitySuggestions"/);
