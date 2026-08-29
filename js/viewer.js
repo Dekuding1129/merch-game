@@ -46,7 +46,7 @@
       toastMessage: document.querySelector('#toastMessage'), pagination: document.querySelector('#productPagination'), soundToggle: document.querySelector('#soundToggle'),
       purchase: document.querySelector('#purchasePanel'), tickerTrack: document.querySelector('#tickerTrack'), detailHotspots: document.querySelector('.detail-hotspots'),
       mobileDock: document.querySelector('#mobilePurchaseDock'), mobileDockName: document.querySelector('#mobileDockName'), mobileDockPrice: document.querySelector('#mobileDockPrice'),
-      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
+      mobileDockAction: document.querySelector('#mobileDockAction'), deliveryModal: document.querySelector('#deliveryModal'), deliveryForm: document.querySelector('#deliveryForm'), closeDelivery: document.querySelector('#closeDelivery'), cancelDelivery: document.querySelector('#cancelDelivery'), deliveryCountry: document.querySelector('#deliveryCountry'), deliveryCountryOptions: document.querySelector('#deliveryCountryOptions'), deliveryRegion: document.querySelector('#deliveryRegion'), deliveryCity: document.querySelector('#deliveryCity'), deliveryCityOptions: document.querySelector('#deliveryCityOptions'), deliveryCitySuggestions: document.querySelector('#deliveryCitySuggestions'), deliveryPostal: document.querySelector('#deliveryPostal'), deliveryPostalOptions: document.querySelector('#deliveryPostalOptions')
     };
 
     let active = 0;
@@ -565,6 +565,13 @@
       list.innerHTML = values.map(value => `<option value="${value}"></option>`).join('');
     }
 
+    function renderCitySuggestions() {
+      const query = els.deliveryCity.value.trim().toLocaleLowerCase();
+      const matches = [...(els.deliveryCity._cityValues || [])].filter(city => city.toLocaleLowerCase().includes(query)).slice(0, 80);
+      els.deliveryCitySuggestions.innerHTML = matches.map(city => `<button class="location-suggestion" type="button" data-city="${city}">${city}</button>`).join('');
+      els.deliveryCitySuggestions.hidden = !matches.length;
+    }
+
     function countryCode() {
       return 'PH';
     }
@@ -575,7 +582,7 @@
 
     async function updateDeliveryRegions() {
       setOptions(els.deliveryRegion, '', [], true);
-      els.deliveryCityOptions.innerHTML = '';
+
       els.deliveryPostal.value = '';
       els.deliveryPostal.placeholder = '';
 
@@ -595,7 +602,8 @@
 
       const data = await getLocationData();
       const cities = data.cities?.[`${countryCode()}.${regionCode()}`] || [];
-      els.deliveryCityOptions.innerHTML = cities.map(city => `<option value="${city.name}"></option>`).join('');
+      els.deliveryCity._cityValues = cities.map(city => city.name).sort((a, b) => a.localeCompare(b));
+      renderCitySuggestions();
       els.deliveryCity.placeholder = cities.length ? '' : '';
       els.deliveryCity.disabled = false;
     }
@@ -690,6 +698,15 @@
 
     els.deliveryRegion.addEventListener('change', updateDeliveryCities);
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
+    els.deliveryCity.addEventListener('input', () => { renderCitySuggestions(); updateDeliveryPostal(); });
+    els.deliveryCitySuggestions.addEventListener('mousedown', event => {
+      const button = event.target.closest('[data-city]');
+      if (!button) return;
+      event.preventDefault();
+      els.deliveryCity.value = button.dataset.city;
+      els.deliveryCitySuggestions.hidden = true;
+      updateDeliveryPostal();
+    });
 
 
     Object.entries(readyEvents).forEach(([model, eventName]) => {

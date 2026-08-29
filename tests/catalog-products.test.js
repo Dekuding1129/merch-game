@@ -63,7 +63,7 @@ test('location fields use dependent dropdowns', () => {
   assert.match(index, /id="deliveryRegion"[^>]*disabled/);
   assert.doesNotMatch(index, /id="deliveryCity"[^>]*disabled/);
   assert.doesNotMatch(index, /id="deliveryPostal"[^>]*disabled/);
-  assert.match(index, /list="deliveryCityOptions"/);
+  assert.match(index, /id="deliveryCitySuggestions"/);
   assert.match(viewer, /updateDeliveryRegions\(\)/);
   assert.match(viewer, /updateDeliveryCities\(\)/);
   assert.match(viewer, /updateDeliveryPostal\(\)/);
@@ -72,12 +72,13 @@ test('location fields use dependent dropdowns', () => {
   assert.match(viewer, /data\.regions/);
   assert.match(viewer, /data\.provinces/);
   assert.match(viewer, /data\.cities/);
+  assert.match(viewer, /sort\(\(a, b\) => a\.localeCompare\(b\)\)/);
   assert.match(viewer, /data\.postal/);
 });
 
 test('city and postal fields remain writable with dropdown suggestions', () => {
   const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
-  assert.match(index, /id="deliveryCity"[^>]*list="deliveryCityOptions"/);
+  assert.match(index, /id="deliveryCity"[^>]*autocomplete="address-level2"/);
   assert.match(index, /id="deliveryPostal"[^>]*list="deliveryPostalOptions"/);
   assert.match(viewer, /els\.deliveryPostal\.disabled = false/);
 });

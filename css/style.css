@@ -284,6 +284,11 @@
     .delivery-note { margin: 18px 0 22px; color: var(--muted); font-size: 10px; line-height: 1.6; }
     .delivery-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
     .delivery-grid input, .delivery-grid select { width: 100%; height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: 0; color: var(--ink); background: var(--panel); }
+    .location-autocomplete { position: relative; }
+    .location-suggestions { position: absolute; z-index: 3; top: 73px; left: 0; right: 0; max-height: 230px; overflow-y: auto; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 12px 24px rgb(0 0 0 / .28); }
+    .location-suggestions[hidden] { display: none; }
+    .location-suggestion { display: block; width: 100%; padding: 11px 12px; border: 0; border-bottom: 1px solid var(--line); color: var(--ink); background: transparent; text-align: left; cursor: pointer; }
+    .location-suggestion:hover, .location-suggestion:focus { color: var(--panel); background: var(--accent); outline: none; }
     .delivery-wide { grid-column: 1 / -1; }
     .delivery-actions { display: grid; grid-template-columns: auto 1fr; gap: 12px; margin-top: 24px; }
     .delivery-cancel { min-height: 58px; padding: 0 20px; border: 1px solid var(--line); background: transparent; cursor: pointer; text-transform: uppercase; }
