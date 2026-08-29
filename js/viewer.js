@@ -590,7 +590,7 @@
       const data = await getLocationData();
       const regions = data.regions?.[countryCode()] || [];
       const provinces = data.provinces?.[countryCode()] || [];
-      setOptions(els.deliveryRegion, '', [...regions, ...provinces], !(regions.length || provinces.length));
+      setOptions(els.deliveryRegion, '', [...regions, ...provinces].sort((a, b) => a.name.localeCompare(b.name)), !(regions.length || provinces.length));
     }
 
     async function updateDeliveryCities() {
@@ -699,10 +699,11 @@
     els.deliveryRegion.addEventListener('change', updateDeliveryCities);
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
     els.deliveryCity.addEventListener('input', () => { renderCitySuggestions(); updateDeliveryPostal(); });
-    els.deliveryCitySuggestions.addEventListener('mousedown', event => {
+    els.deliveryCitySuggestions.addEventListener('pointerdown', event => {
       const button = event.target.closest('[data-city]');
       if (!button) return;
       event.preventDefault();
+      event.stopPropagation();
       els.deliveryCity.value = button.dataset.city;
       els.deliveryCitySuggestions.hidden = true;
       updateDeliveryPostal();
