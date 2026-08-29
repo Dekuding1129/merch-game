@@ -72,14 +72,18 @@ def main():
                 key = f'{cc}.{admin1}.{place.casefold()}'
                 postal.setdefault(key, []).append(code)
 
-    output = {'countries': [{'code': cc, 'name': name} for cc, name in sorted(countries.items(), key=lambda item: item[1])], 'regions': {}, 'provinces': provinces, 'cities': {}, 'postal': {}}
+    target = 'PH'
+    output = {'countries': [{'code': target, 'name': countries[target]}], 'regions': {}, 'provinces': {target: provinces.get(target, [])}, 'cities': {}, 'postal': {}}
     for key, name in regions.items():
+        if not key.startswith(f'{target}.'): continue
         output['regions'].setdefault(key.split('.')[0], []).append({'code': key.split('.', 1)[1], 'name': name})
     for cc in output['regions']:
         output['regions'][cc].sort(key=lambda item: item['name'])
     for key, values in cities.items():
+        if not key.startswith(f'{target}.'): continue
         output['cities'][key] = [{'name': name, 'population': population} for name, population in sorted(values.items(), key=lambda item: (-item[1], item[0]))]
     for key, codes in postal.items():
+        if not key.startswith(f'{target}.'): continue
         output['postal'][key] = sorted(set(codes))[:25]
 
     target = DATA / 'geodata.json'
