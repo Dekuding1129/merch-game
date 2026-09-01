@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOOT — Local Test Payment</title>
+  <link rel="stylesheet" href="css/style.css?v=20260828-1700">
+  <style>
+    main.test-payment-shell {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      padding: clamp(28px, 6vw, 76px) 24px;
+      place-items: center;
+    }
+    .test-payment-card {
+      width: min(100%, 1040px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr);
+      gap: clamp(28px, 5vw, 64px);
+      align-items: start;
+      border: 1px solid #353943;
+      background: linear-gradient(135deg, #111319 0%, #171a22 100%);
+      padding: clamp(28px, 5vw, 64px);
+      box-shadow: 0 24px 90px #000b, inset 0 1px 0 rgb(255 255 255 / .035);
+    }
+    .test-payment-card > .test-payment-label,
+    .test-payment-card > h1,
+    .test-payment-card > #paymentIntro,
+    .test-payment-card > #paymentResult { grid-column: 1 / -1; }
+    .test-payment-card h1 {
+      margin: 8px 0 0;
+      max-width: 12ch;
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      line-height: .88;
+      letter-spacing: -.07em;
+    }
+    .test-payment-card #paymentIntro { max-width: 52ch; margin: -8px 0 0; color: #aeb2bc; line-height: 1.65; }
+    .test-payment-summary {
+      min-width: 0;
+      display: grid;
+      gap: 16px;
+      border: 1px solid #30343d;
+      background: #0d0f14;
+      padding: clamp(20px, 3vw, 28px);
+      box-shadow: 0 12px 30px rgb(0 0 0 / .18);
+    }
+    .test-payment-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 18px;
+      color: #aeb2bc;
+      font-size: .86rem;
+    }
+    .test-payment-row strong {
+      max-width: 28ch;
+      color: #f5f6fa;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+    .test-payment-summary .test-payment-row:last-child {
+      border-top: 1px solid #30343d;
+      padding-top: 18px;
+      color: #f0d6a0;
+      font-size: 1rem;
+    }
+    .test-payment-actions {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      margin-top: 0;
+      padding: 22px;
+      border: 1px solid #30343d;
+      background: rgb(13 15 20 / .5);
+    }
+    .test-payment-actions::before {
+      content: 'TEST OUTCOME';
+      display: block;
+      margin-bottom: 4px;
+      color: #aeb2bc;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+    }
+    .test-payment-actions button { width: 100%; min-height: 58px; font-size: .78rem; }
+    .test-payment-actions .failed { background: transparent; color: #f0b0a8; border-color: #8e4d4b; }
+    .test-payment-actions .failed:hover { background: #8e4d4b; color: #fff; }
+    .test-payment-actions .cancelled { color: #aeb2bc; border-color: #444852; opacity: 1; }
+    .test-payment-actions .cancelled:hover { background: #30343d; color: #fff; }
+    .test-payment-warning { grid-column: 1 / -1; border: 1px solid #d9a84e66; color: #f0d6a0; padding: 13px 15px; margin: 0; font-size: .78rem; letter-spacing: .02em; }
+    .test-payment-card [hidden] { display: none !important; }
+    .test-payment-result { margin-top: 0; }
+    .test-receipt {
+      max-width: 560px;
+      border: 1px solid #56622e;
+      background: #10150e;
+      padding: clamp(20px, 4vw, 30px);
+    }
+    .test-receipt__label { color: #d7ff45; font-size: .7rem; font-weight: 700; letter-spacing: .14em; }
+    .test-receipt h2 { margin: 12px 0 22px; color: #f5f6fa; }
+    .test-receipt__line { display: flex; justify-content: space-between; gap: 20px; padding: 11px 0; border-top: 1px solid #293020; color: #aeb2bc; font-size: .82rem; }
+    .test-receipt__line strong { color: #fff; text-align: right; overflow-wrap: anywhere; }
+    .test-receipt__total { margin-top: 8px; color: #f0d6a0; font-size: 1rem; }
+    .test-receipt__note { margin: 20px 0 0; color: #aeb2bc; font-size: .78rem; line-height: 1.6; }
+    @media (max-width: 700px) {
+      main.test-payment-shell { padding: 24px 16px; }
+      .test-payment-card { grid-template-columns: 1fr; gap: 28px; padding: 28px 22px; }
+      .test-payment-card > .test-payment-label,
+      .test-payment-card > h1,
+      .test-payment-card > #paymentIntro,
+      .test-payment-card > #paymentResult { grid-column: 1; }
+      .test-payment-card h1 { max-width: 8ch; }
+      .test-payment-actions { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <main class="test-payment-shell">
+    <section class="test-payment-card" aria-labelledby="paymentTitle">
+      <div class="test-payment-label">SECURE CHECKOUT · TEST MODE · NO CHARGE</div>
+      <h1 id="paymentTitle">Complete your order</h1>
+      <p id="paymentIntro">Loading your local test order…</p>
+      <div id="paymentSummary" class="test-payment-summary" hidden></div>
+      <div id="paymentActions" class="test-payment-actions" hidden>
+        <button class="equip" data-result="success" type="button">Continue securely</button>
+        <button class="equip failed" data-result="failed" type="button">Test declined payment</button>
+        <button class="delivery-cancel cancelled" data-result="cancelled" type="button">Cancel checkout</button>
+      </div>
+      <section id="paymentResult" class="test-payment-result" hidden aria-live="polite"></section>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      const sessionId = params.get('session');
+      const apiBase = params.get('api') || `${location.protocol}//${location.hostname}:8787`;
+      const intro = document.querySelector('#paymentIntro');
+      const summary = document.querySelector('#paymentSummary');
+      const actions = document.querySelector('#paymentActions');
+      const resultBox = document.querySelector('#paymentResult');
+      let session;
+
+      const money = value => `₱${Number(value).toLocaleString('en-PH')}`;
+      const row = (label, value) => `<div class="test-payment-row"><span>${label}</span><strong>${value}</strong></div>`;
+      const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+      function showReceipt(order, status, emailSent = false) {
+        intro.textContent = status === 'paid' ? 'Your payment has been recorded.' : status === 'failed' ? 'The payment was not completed.' : 'The checkout was cancelled.';
+        actions.hidden = true;
+        resultBox.hidden = false;
+        resultBox.className = `test-payment-result ${status === 'paid' ? 'success' : 'error'}`;
+        const item = order.items?.[0];
+        const title = status === 'paid' ? 'Payment received' : status === 'failed' ? 'Payment declined' : 'Payment cancelled';
+        resultBox.innerHTML = `<div class="test-receipt"><div class="test-receipt__label">PAYMENT RECEIPT · TEST MODE</div><h2>${title}</h2><div class="test-receipt__line"><span>Order</span><strong>${escapeHtml(order.orderId)}</strong></div>${item ? `<div class="test-receipt__line"><span>${escapeHtml(item.name)} · ${escapeHtml(item.option)} ×${escapeHtml(item.quantity)}</span><strong>${escapeHtml(money(item.unitPrice * item.quantity))}</strong></div>` : ''}<div class="test-receipt__line test-receipt__total"><span>Total</span><strong>${escapeHtml(money(order.subtotal))} ${escapeHtml(order.currency)}</strong></div><p class="test-receipt__note">${status === 'paid' ? 'Your local test payment was recorded. No real money was charged.' : 'No real money was charged.'}${emailSent ? ' A receipt was sent to the email used at checkout.' : ''}</p><a class="equip test-payment-back" href="index.html">Return to main page</a></div>`;
+      }
+      function showResult(kind, title, message, reference) {
+        actions.hidden = true;
+        resultBox.hidden = false;
+        resultBox.className = `test-payment-result ${kind}`;
+        resultBox.innerHTML = `<h2>${title}</h2><p>${message}</p>${reference ? `<p><strong>Order reference:</strong> ${reference}</p>` : ''}${kind !== 'success' ? `<a class="equip test-payment-back" href="index.html">${title.includes('failed') ? 'Try again' : 'Return to the store'}</a>` : ''}`;
+      }
+      async function loadSession() {
+        if (!sessionId) throw new Error('Missing payment session.');
+        const response = await fetch(`${apiBase}/api/payments/test-session/${encodeURIComponent(sessionId)}`);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Could not load the local payment session.');
+        session = data.session;
+        if (session.paymentStatus !== 'pending') {
+          showReceipt(session, session.paymentStatus);
+          return;
+        }
+        intro.textContent = 'Review the server-calculated order, then choose a local result.';
+        summary.innerHTML = row('Order reference', session.orderId) + session.items.map(item => row(`${item.name} · ${item.option}`, `×${item.quantity}`)).join('') + row('Subtotal', `${money(session.subtotal)} ${session.currency}`);
+        summary.hidden = false;
+        actions.hidden = false;
+      }
+      async function complete(result, button) {
+        button.disabled = true;
+        try {
+          const response = await fetch(`${apiBase}/api/payments/test-session/${encodeURIComponent(sessionId)}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ result }) });
+          const data = await response.json().catch(() => ({}));
+          if (response.status === 409) {
+            const latestResponse = await fetch(`${apiBase}/api/payments/test-session/${encodeURIComponent(sessionId)}`);
+            const latest = await latestResponse.json();
+            if (latestResponse.ok && latest.session) return showReceipt(latest.session, latest.session.paymentStatus);
+          }
+          if (!response.ok) throw new Error(data.error || 'The local backend could not complete the payment.');
+          const completedStatus = result === 'success' ? 'paid' : result === 'failed' ? 'failed' : 'cancelled';
+          showReceipt({ ...session, paymentStatus: completedStatus }, completedStatus, data.emailSent);
+        } catch (error) {
+          button.disabled = false;
+          showResult('error', 'Checkout unavailable', `${error.message} Check that the local backend is running on port 8787 and try again.`);
+        }
+      }
+      actions.addEventListener('click', event => { const button = event.target.closest('[data-result]'); if (button) complete(button.dataset.result, button); });
+      loadSession().catch(error => showResult('error', 'Payment page unavailable', `${error.message} Start the local backend on port 8787 and open this page again.`));
+    })();
+  </script>
+</body>
+</html>

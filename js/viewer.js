@@ -686,37 +686,55 @@
       const sku = p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       const submit = els.confirmOrder;
       submit.disabled = true;
-      submit.textContent = 'Checking…';
+      submit.textContent = 'Creating order…';
       let response;
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 8000);
         try {
           response = await fetch(`${apiBase}/api/checkout/quote`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items: [{ sku, quantity: 1, option: els.size.value }], delivery }), signal: controller.signal });
-        } finally {
-          clearTimeout(timeout);
-        }
+        } finally { clearTimeout(timeout); }
       } catch {
         submit.disabled = false;
-        submit.textContent = 'Confirm demo order';
+        submit.textContent = 'Continue to payment';
         els.toast.querySelector('strong').textContent = 'Backend unavailable';
-        els.toastMessage.textContent = 'Review saved. Start the local backend to finish the demo order.';
+        els.toastMessage.textContent = 'Start the local backend on port 8787, then try again.';
         els.toast.classList.add('show');
         return;
       }
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) {
         submit.disabled = false;
-        submit.textContent = 'Confirm demo order';
-        els.toast.querySelector('strong').textContent = 'Could not continue';
+        submit.textContent = 'Continue to payment';
+        els.toast.querySelector('strong').textContent = 'Could not save order';
         els.toastMessage.textContent = result.error || 'Check the delivery details and try again.';
+        els.toast.classList.add('show');
+        return;
+      }
+      let sessionResponse;
+      try {
+        sessionResponse = await fetch(`${apiBase}/api/payments/create-test-session`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: result.checkout.id }) });
+      } catch {
+        submit.disabled = false;
+        submit.textContent = 'Continue to payment';
+        els.toast.querySelector('strong').textContent = 'Payment page unavailable';
+        els.toastMessage.textContent = 'The order was saved, but the local payment session could not be created.';
+        els.toast.classList.add('show');
+        return;
+      }
+      const session = await sessionResponse.json().catch(() => ({}));
+      if (!sessionResponse.ok || !session.paymentSessionId) {
+        submit.disabled = false;
+        submit.textContent = 'Continue to payment';
+        els.toast.querySelector('strong').textContent = 'Could not continue';
+        els.toastMessage.textContent = session.error || 'Could not create the local payment session.';
         els.toast.classList.add('show');
         return;
       }
       cart.push({ ...p, option: els.size.value });
       els.cartCount.textContent = cart.length;
       renderCart();
-      showOrderConfirmation(`${p.name} is ready. Demo reference: ${result.checkout.id}. No payment was taken.${result.checkout.emailSent ? ' The confirmation email is in the local Mailpit inbox.' : ''}`);
+      window.location.href = `test-payment.html?session=${encodeURIComponent(session.paymentSessionId)}&api=${encodeURIComponent(apiBase)}`;
     }
 
     function renderCart() {

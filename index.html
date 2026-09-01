@@ -100,7 +100,7 @@
   <div class="delivery-modal" id="deliveryModal" hidden>
     <section class="delivery-card" role="dialog" aria-modal="true" aria-labelledby="deliveryTitle">
       <div class="delivery-head"><div><div class="eyebrow">Delivery details</div><h3 id="deliveryTitle">Where should we send it?</h3></div><button class="close-cart" id="closeDelivery" type="button" aria-label="Close delivery form">×</button></div>
-      <p class="delivery-note">Placeholder checkout: your details stay in this browser session and are not sent or saved yet.</p>
+      <p class="delivery-note">Local test checkout only. Your details are sent to the local backend and saved in Supabase for this test flow. No real payment or email is sent.</p>
       <form id="deliveryForm">
         <div class="delivery-grid">
           <input type="hidden" id="deliveryCountry" name="country" value="Philippines">
@@ -120,8 +120,8 @@
         <h4 id="orderReviewTitle">Check your details</h4>
         <div class="review-product"><div><strong id="reviewProductName"></strong><span id="reviewProductOption"></span></div><strong id="reviewProductPrice"></strong></div>
         <dl class="review-details" id="reviewDetails"></dl>
-        <p class="review-demo-note">Demo checkout only. No payment will be taken.</p>
-        <div class="delivery-actions"><button class="delivery-cancel" id="editDelivery" type="button">Edit details</button><button class="equip" id="confirmOrder" type="button">Confirm demo order</button></div>
+        <p class="review-demo-note">LOCAL TEST PAYMENT ONLY — no payment will be taken and no real money will be charged.</p>
+        <div class="delivery-actions"><button class="delivery-cancel" id="editDelivery" type="button">Edit details</button><button class="equip" id="confirmOrder" type="button">Continue to payment</button></div>
       </section>
       <section id="orderConfirmation" class="order-confirmation" hidden aria-live="polite">
         <div class="eyebrow">Demo order ready</div>

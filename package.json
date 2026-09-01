@@ -1,0 +1,28 @@
+{
+  "name": "merch-game",
+  "version": "1.0.0",
+  "description": "LOOT is an interactive merchandise storefront concept built around a game-like product-selection experience. Visitors can browse a catalog, inspect products, rotate 3D items, choose a size, and add gear to an in-page inventory.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dekuding1129/merch-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dekuding1129/merch-game/issues"
+  },
+  "homepage": "https://github.com/Dekuding1129/merch-game#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.4",
+    "dotenv": "^17.4.2",
+    "nodemailer": "^9.1.0"
+  }
+}
