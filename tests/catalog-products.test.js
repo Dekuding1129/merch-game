@@ -127,3 +127,10 @@ test('checkout refreshes postal code before building the order review', () => {
   const postalRefresh = viewer.slice(viewer.indexOf('async function updateDeliveryPostal'), viewer.indexOf('function showOrderReview'));
   assert.doesNotMatch(postalRefresh, /els\.deliveryBarangay\.value\s*=\s*''/);
 });
+
+test('payment page presents one polished checkout action without test outcome buttons', () => {
+  const payment = fs.readFileSync(path.join(__dirname, '..', 'test-payment.html'), 'utf8');
+  assert.doesNotMatch(payment, /Test declined payment|TEST OUTCOME/);
+  assert.match(payment, /data-result="success"[^>]*>Complete checkout</);
+  assert.match(payment, /data-result="cancelled"[^>]*>Return to store</);
+});
