@@ -139,7 +139,8 @@
       const sessionId = params.get('session');
       const requestedApi = new URLSearchParams(location.search).get('api');
       const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
-      const apiBase = requestedApi || (isLocal ? `${location.protocol}//${location.hostname}:8787` : location.origin);
+      const isGitHubPages = location.hostname.endsWith('.github.io');
+      const apiBase = requestedApi || (isLocal ? `${location.protocol}//${location.hostname}:8787` : isGitHubPages ? 'https://merch-game.vercel.app' : location.origin);
       const intro = document.querySelector('#paymentIntro');
       const summary = document.querySelector('#paymentSummary');
       const actions = document.querySelector('#paymentActions');

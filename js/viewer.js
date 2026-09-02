@@ -62,7 +62,8 @@
     let deliveryDetails = null;
     const requestedApi = new URLSearchParams(window.location.search).get('api');
     const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    const apiBase = requestedApi || (isLocal ? `${window.location.protocol}//${window.location.hostname}:8787` : window.location.origin);
+    const isGitHubPages = window.location.hostname.endsWith('.github.io');
+    const apiBase = requestedApi || (isLocal ? `${window.location.protocol}//${window.location.hostname}:8787` : isGitHubPages ? 'https://merch-game.vercel.app' : window.location.origin);
     let locationDataPromise;
     function getLocationData() {
       return locationDataPromise ||= fetch('data/geodata.json').then(response => {
