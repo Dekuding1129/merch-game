@@ -12,7 +12,7 @@ const defaultOrders = new Map();
 const defaultSupabase = process.env.SUPABASE_URL && process.env.SUPABASE_SECRET_KEY
   ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY)
   : null;
-const geodataPath = path.join(__dirname, 'data', 'geodata.json');
+const geodataPath = path.join(__dirname, '..', 'data', 'geodata.json');
 let geodata = null;
 try { geodata = JSON.parse(fs.readFileSync(geodataPath, 'utf8')); } catch { /* Optional generated location data. */ }
 
