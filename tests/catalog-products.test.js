@@ -124,4 +124,6 @@ test('location lookup accepts postal datasets that append City to the selected c
 
 test('checkout refreshes postal code before building the order review', () => {
   assert.match(viewer, /await updateDeliveryPostal\(\);\s*deliveryDetails = Object\.fromEntries/);
+  const postalRefresh = viewer.slice(viewer.indexOf('async function updateDeliveryPostal'), viewer.indexOf('function showOrderReview'));
+  assert.doesNotMatch(postalRefresh, /els\.deliveryBarangay\.value\s*=\s*''/);
 });

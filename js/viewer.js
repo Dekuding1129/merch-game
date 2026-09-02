@@ -650,9 +650,6 @@
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
       const postalCodes = postalCodesForCity(data, city);
-      els.deliveryBarangay._barangayValues = data.barangays?.[city.toLocaleLowerCase()] || [];
-      els.deliveryBarangay.value = '';
-      renderBarangaySuggestions();
       setSuggestions(els.deliveryPostalOptions, postalCodes);
       els.deliveryPostal.placeholder = '';
       els.deliveryPostal.disabled = false;
