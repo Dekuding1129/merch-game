@@ -598,6 +598,12 @@
       return els.deliveryRegion.dataset.code?.split('.')[0] || '';
     }
 
+    function postalCodesForCity(data, city) {
+      const normalized = city.trim().toLocaleLowerCase().replace(/\s+city$/i, '');
+      const candidates = [normalized, `${normalized} city`];
+      return candidates.map(name => data.postal?.[`${countryCode()}.${regionCode()}.${name}`] || []).find(values => values.length) || [];
+    }
+
     async function updateDeliveryRegions() {
       els.deliveryRegion.value = '';
       delete els.deliveryRegion.dataset.code;
@@ -640,7 +646,7 @@
 
       setSuggestions(els.deliveryPostalOptions, []); return; }
       const data = await getLocationData();
-      const postalCodes = data.postal?.[`${countryCode()}.${regionCode()}.${city.toLocaleLowerCase()}`] || [];
+      const postalCodes = postalCodesForCity(data, city);
       els.deliveryBarangay._barangayValues = data.barangays?.[city.toLocaleLowerCase()] || [];
       els.deliveryBarangay.value = '';
       renderBarangaySuggestions();
@@ -676,6 +682,7 @@
     async function saveDeliveryDetails(event) {
       event.preventDefault();
       if (!els.deliveryForm.reportValidity()) return;
+      await updateDeliveryPostal();
       deliveryDetails = Object.fromEntries(new FormData(els.deliveryForm).entries());
       showOrderReview(deliveryDetails);
     }
@@ -787,6 +794,7 @@
       updateDeliveryCities();
     });
     els.deliveryCity.addEventListener('change', updateDeliveryPostal);
+    els.deliveryCity.addEventListener('blur', updateDeliveryPostal);
     els.deliveryCity.addEventListener('input', renderCitySuggestions);
     els.deliveryCitySuggestions.addEventListener('pointerdown', event => {
       const button = event.target.closest('[data-city]');

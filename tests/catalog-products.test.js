@@ -114,8 +114,14 @@ test('city and postal inputs stay writable before dependent suggestions load', (
   assert.match(viewer, /els\.deliveryCity\.disabled = false/);
 });
 
-test('location lookup defaults to Philippines', () => {
+test('location lookup accepts postal datasets that append City to the selected city', () => {
   assert.match(viewer, /function countryCode\(\)\s*\{\s*return 'PH'/);
   assert.match(viewer, /function regionCode\(\)/);
   assert.match(viewer, /els\.deliveryPostal\.value = postalCodes\[0\]/);
+  assert.match(viewer, /replace\(\/\\s\+city\$\/i, ''\)/);
+  assert.match(viewer, /postalCodesForCity\(data, city\)/);
+});
+
+test('checkout refreshes postal code before building the order review', () => {
+  assert.match(viewer, /await updateDeliveryPostal\(\);\s*deliveryDetails = Object\.fromEntries/);
 });
