@@ -60,7 +60,9 @@
     let pitchStart = 0;
     const cart = [];
     let deliveryDetails = null;
-    const apiBase = new URLSearchParams(window.location.search).get('api') || `${window.location.protocol}//${window.location.hostname}:8787`;
+    const requestedApi = new URLSearchParams(window.location.search).get('api');
+    const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const apiBase = requestedApi || (isLocal ? `${window.location.protocol}//${window.location.hostname}:8787` : window.location.origin);
     let locationDataPromise;
     function getLocationData() {
       return locationDataPromise ||= fetch('data/geodata.json').then(response => {
