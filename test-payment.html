@@ -167,7 +167,7 @@
       }
       async function loadSession() {
         if (!sessionId) throw new Error('Missing payment session.');
-        const response = await fetch(`${apiBase}/api/payments/test-session/${encodeURIComponent(sessionId)}`);
+        const response = await fetch(`${apiBase}/api/payments/session?session=${encodeURIComponent(sessionId)}`);
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || 'Could not load the local payment session.');
         session = data.session;
@@ -186,7 +186,7 @@
           const response = await fetch(`${apiBase}/api/payments/test-session/${encodeURIComponent(sessionId)}/complete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ result }) });
           const data = await response.json().catch(() => ({}));
           if (response.status === 409) {
-            const latestResponse = await fetch(`${apiBase}/api/payments/test-session/${encodeURIComponent(sessionId)}`);
+            const latestResponse = await fetch(`${apiBase}/api/payments/session?session=${encodeURIComponent(sessionId)}`);
             const latest = await latestResponse.json();
             if (latestResponse.ok && latest.session) return showReceipt(latest.session, latest.session.paymentStatus);
           }
